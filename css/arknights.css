@@ -574,7 +574,7 @@ nav a {
   line-height: 40px;
   padding: 0 12px;
   display: inline-block;
-  padding: 3.230769230769231em 0;
+  padding: 4.2em 0;
   width: 100%;
   color: #fff;
 }
@@ -876,11 +876,11 @@ nav .navContent .navItem .navItemTitle {
 }
 .search [class$="navItem"],
 .search [class$="active"] {
-  transform: translateX(-150%);
+  transform: translateX(150%);
 }
 .search-popup {
-  left: 0;
-  transform: translateX(-100%);
+  right: 0;
+  transform: translateX(100%);
 }
 .search-popup.open {
   transform: translateX(0%);
@@ -889,78 +889,86 @@ nav .navContent .navItem .navItemTitle {
   border-color: #2bf;
 }
 .search-header::after {
-  border-left: 4px solid #fff;
+  border-right: 4px solid #fff;
 }
 @media (min-width: 1024px) {
-  .search-header input::placeholder {
-    text-align: right;
+  .search-header input {
+    right: 10px;
   }
   .search-header::after {
-    left: 0;
+    right: 0;
   }
 }
 @-moz-keyframes get-in {
   0% {
-    left: -180%;
+    left: 180%;
   }
   100% {
-    left: 0;
+    left: -10px;
   }
 }
 @-webkit-keyframes get-in {
   0% {
-    left: -180%;
+    left: 180%;
   }
   100% {
-    left: 0;
+    left: -10px;
   }
 }
 @-o-keyframes get-in {
   0% {
-    left: -180%;
+    left: 180%;
   }
   100% {
-    left: 0;
+    left: -10px;
   }
 }
 @keyframes get-in {
   0% {
-    left: -180%;
+    left: 180%;
   }
   100% {
-    left: 0;
+    left: -10px;
   }
 }
 @-moz-keyframes get-out {
   0% {
     width: 180%;
+    right: 80%;
   }
   100% {
     width: calc(100% + 10px);
+    right: 10px;
   }
 }
 @-webkit-keyframes get-out {
   0% {
     width: 180%;
+    right: 80%;
   }
   100% {
     width: calc(100% + 10px);
+    right: 10px;
   }
 }
 @-o-keyframes get-out {
   0% {
     width: 180%;
+    right: 80%;
   }
   100% {
     width: calc(100% + 10px);
+    right: 10px;
   }
 }
 @keyframes get-out {
   0% {
     width: 180%;
+    right: 80%;
   }
   100% {
     width: calc(100% + 10px);
+    right: 10px;
   }
 }
 .gt-container {
@@ -1530,77 +1538,80 @@ nav .navContent .navItem .navItemTitle {
   }
 }
 @media (min-width: 769px) {
-  header {
-    left: 0;
+  .navBtn {
+    right: 1.5rem;
   }
   .navContent {
-    transform: translateX(-100%);
+    transform: translateX(200%);
+  }
+  header {
+    right: 0;
   }
   aside {
-    right: 0;
+    left: 0;
   }
 }
 @media (min-width: 1024px) {
   .navContent {
-    padding: 1em 3em 1em 0;
+    padding: 1em 0 1em 3em;
     transform: unset;
   }
   .navContent .navItem {
-    left: 1em;
+    right: 1em;
   }
   .navContent .navItem:hover a {
-    margin-left: 1em;
+    margin-left: -1em;
   }
   .navContent .navItem a {
-    text-align: right;
+    text-align: left;
   }
   .navContent .navItem a .navItemTitle::after {
-    left: -4px;
-    border-left: 4px solid;
+    right: -4px;
+    border-right: 4px solid;
   }
   article {
-    margin-right: 240px;
-    margin-left: 176px;
+    margin-right: 176px;
+    margin-left: 240px;
   }
 }
 @media (min-width: 1440px) {
   .navContent .navItem {
-    padding-right: 0.5em;
-    left: 2.25em;
+    padding-left: 0.5em;
+    right: 2.25em;
   }
   article {
-    margin-right: 270px;
-    margin-left: 220px;
+    margin-right: 220px;
+    margin-left: 270px;
   }
 }
 @media (min-width: 1920px) {
   .navContent .navItem {
-    padding-right: 3.25em;
-    left: 5.25em;
+    padding-left: 3.25em;
+    right: 5.25em;
   }
   article {
-    margin-right: calc(5% + 310px);
-    margin-left: 310px;
+    margin-left: calc(5% + 310px);
+    margin-right: 310px;
   }
   aside {
-    right: 5%;
+    left: 5%;
   }
 }
 @media (min-width: 769px) and (max-width: 991px) {
   article {
-    margin-right: 200px;
-    margin-left: 20px;
+    margin-left: 200px;
+    margin-right: 20px;
   }
 }
 @media (min-width: 992px) and (max-width: 1023px) {
   article {
-    margin-left: 50px;
-    margin-right: 210px;
+    margin-right: 50px;
+    margin-left: 210px;
   }
 }
 @media (min-width: 992px) and (max-width: 1919px) {
   aside {
-    padding: 0 25px 0 15px;
+    padding: 0 15px 0 25px;
   }
 }
 @media (max-width: 768px) {

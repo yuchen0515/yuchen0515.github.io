@@ -224,10 +224,10 @@ window.addEventListener('DOMContentLoaded', ()=>{
     }
     var resultContent = document.getElementById('search-result');
     if (keywords.length === 1 && keywords[0] === '') {
-      document.querySelector('#search-input').placeholder = '键入以进行';
+      document.querySelector('#search-input').placeholder = 'Enter...';
       onPopupClose();
     } else if (resultItems.length === 0) {
-      resultContent.innerHTML = `<div id="no-result"><p>无“<b>${input.value}</b>”相关数据</p></div>`;
+      resultContent.innerHTML = `<div id="no-result"><p>No "<b>${input.value}</b>" result...</p></div>`;
     } else {
       resultItems.sort((Left, Right)=>{
         if (Left.TextCount !== Right.TextCount) {
@@ -261,7 +261,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }
   const StartSearch = ()=>{
     document.querySelector('.navContent').classList.add('search');
-    document.querySelector('#search-input').placeholder = '键入以进行';
+    document.querySelector('#search-input').placeholder = 'Enter...';
     if (isfetched === false) {
       searchFunc();
     }
@@ -285,7 +285,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     StartSearch();
   });
   document.querySelector('#search-input').addEventListener('blur', ()=>{
-    document.querySelector('#search-input').placeholder = '数据检索';
+    document.querySelector('#search-input').placeholder = 'Search';
     document.querySelector('.navContent').classList.remove('search');
     document.querySelector('.navContent').classList.add('moved');
     document.addEventListener('mouseup', EscapeSearch);

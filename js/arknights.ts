@@ -29,7 +29,7 @@ class canvasDust {
       this.build()
       window.addEventListener('resize', ()=> this.resize())
     } else {
-      throw new Error('canvasID 无效')
+      throw new Error('canvasID 無效')
     }
   }
 
@@ -232,7 +232,7 @@ class codes {
         this.resetName(codeType) + ' 共 ' + lineCount + ' 行</span>\
         <span class="code-header-tail">\
           <button class="code-copy"></button>\
-          <span class="code-space">展开</span>\
+          <span class="code-space">展開</span>\
         </span>\
     </span></span>\
     <div class="code-box">' + item.innerHTML + '</div>'
