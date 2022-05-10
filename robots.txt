@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /archives/
+Allow: /links/
+Allow: /about/
+Disallow: /js/
+Disallow: /css/
+Disallow: /fonts/
+
+Sitemap: http://yuchen0515.github.io/sitemap.xml
