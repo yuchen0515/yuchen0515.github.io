@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://yuchen0515.github.io/about/index.html</loc>
-    
-    <lastmod>2023-01-28</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://yuchen0515.github.io/202207_%E8%B3%BD%E5%BE%8C%E5%BF%83%E5%BE%97-%E3%80%8C%E7%9C%8B%E8%A6%8B%E4%BD%A0%E7%9A%84%E8%81%B2%E9%9F%B3-%E8%AA%9E%E9%9F%B3%E8%BE%A8%E8%AD%98%E5%BE%8C%E4%BF%AE%E6%AD%A3%E3%80%8D/</loc>
     
     <lastmod>2023-01-28</lastmod>
@@ -21,6 +12,15 @@
   
   <url>
     <loc>https://yuchen0515.github.io/202209_MIRlab-owen-lin-RD-page/</loc>
+    
+    <lastmod>2023-01-28</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://yuchen0515.github.io/about/index.html</loc>
     
     <lastmod>2023-01-28</lastmod>
     
@@ -54,13 +54,6 @@
     <priority>1.0</priority>
   </url>
 
-  
-  <url>
-    <loc>https://yuchen0515.github.io/tags/MIRlab/</loc>
-    <lastmod>2023-01-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
   
   <url>
     <loc>https://yuchen0515.github.io/tags/%E7%AB%B6%E8%B3%BD/</loc>
@@ -104,17 +97,24 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://yuchen0515.github.io/tags/MIRlab/</loc>
+    <lastmod>2023-01-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
-    <loc>https://yuchen0515.github.io/categories/%E5%AF%A6%E9%A9%97%E5%AE%A4/</loc>
+    <loc>https://yuchen0515.github.io/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/</loc>
     <lastmod>2023-01-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://yuchen0515.github.io/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/</loc>
+    <loc>https://yuchen0515.github.io/categories/%E5%AF%A6%E9%A9%97%E5%AE%A4/</loc>
     <lastmod>2023-01-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
