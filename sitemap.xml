@@ -56,6 +56,13 @@
 
   
   <url>
+    <loc>https://yuchen0515.github.io/tags/MIRlab/</loc>
+    <lastmod>2023-04-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://yuchen0515.github.io/tags/%E7%AB%B6%E8%B3%BD/</loc>
     <lastmod>2023-04-01</lastmod>
     <changefreq>weekly</changefreq>
@@ -97,24 +104,17 @@
     <priority>0.2</priority>
   </url>
   
-  <url>
-    <loc>https://yuchen0515.github.io/tags/MIRlab/</loc>
-    <lastmod>2023-04-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
 
   
   <url>
-    <loc>https://yuchen0515.github.io/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/</loc>
+    <loc>https://yuchen0515.github.io/categories/%E5%AF%A6%E9%A9%97%E5%AE%A4/</loc>
     <lastmod>2023-04-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://yuchen0515.github.io/categories/%E5%AF%A6%E9%A9%97%E5%AE%A4/</loc>
+    <loc>https://yuchen0515.github.io/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/</loc>
     <lastmod>2023-04-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
