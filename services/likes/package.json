@@ -1,0 +1,15 @@
+{
+  "name": "owen-blog-likes",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "dev:setup": "node scripts/setup-local.mjs",
+    "dev:migrate": "wrangler d1 migrations apply DB --local --config wrangler.local.jsonc",
+    "dev": "wrangler dev --local --config wrangler.local.jsonc",
+    "sync-posts": "node scripts/sync-posts.mjs",
+    "check": "node --check src/worker.mjs"
+  },
+  "devDependencies": { "wrangler": "^4.0.0" }
+}

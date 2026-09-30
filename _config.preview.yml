@@ -1,0 +1,3 @@
+# Only the local preview uses this endpoint. Production builds use _config.yml.
+theme_config:
+  likes_endpoint: http://127.0.0.1:8788

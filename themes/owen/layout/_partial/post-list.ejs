@@ -1,0 +1,5 @@
+<div class="post-list"><% posts.forEach(function(post) { %><article class="post-row">
+  <div class="post-date"><time datetime="<%= post.date.toISOString() %>"><%= post.date.format('YYYY.MM.DD') %></time><span><%= post.categories.map(c=>c.name).join(' · ') %></span></div>
+  <div class="post-row-content"><h2><a href="<%= url_for(post.path) %>"><%= post.title %></a></h2><p><%= summary(post) %></p><div class="post-row-meta"><span><%= reading_minutes(post) %> 分鐘閱讀</span><% post.tags.toArray().slice(0,3).forEach(function(tag) { %><a href="<%= url_for(tag.path) %>"><%= tag.name %></a><% }); %></div></div>
+  <a class="post-arrow" href="<%= url_for(post.path) %>" aria-label="閱讀：<%= post.title %>"><%- icon('arrow-up-right') %></a>
+</article><% }); %></div>

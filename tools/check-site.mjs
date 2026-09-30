@@ -1,0 +1,11 @@
+import fs from 'node:fs';import path from 'node:path';import {load} from 'cheerio';
+const errors=[];const files=[];function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())walk(file);else if(file.endsWith('.html'))files.push(file)}}walk('public');
+for(const file of files){const html=fs.readFileSync(file,'utf8'),$=load(html),seen=new Set();
+  if(/clientSecret|client_secret|your-project-id|your-oauth-server|YOUR_USERNAME/.test(html))errors.push(`${file}: 尚有舊整合或範例設定`);
+  if(!/viewport/.test(html))errors.push(`${file}: 缺少手機 viewport`);
+  $('[id]').each((i,el)=>{const id=$(el).attr('id');if(seen.has(id))errors.push(`${file}: 重複 id ${id}`);seen.add(id)});
+  $('a[href],img[src],script[src],link[href]').each((i,el)=>{const value=$(el).attr('href')||$(el).attr('src');if(!value||/^(?:https?:|mailto:|data:|\/\/)/.test(value))return;const url=new URL(value,'https://yuchen0515.github.io/'+file.slice(7));const target=path.join('public',decodeURIComponent(url.pathname));const local=fs.existsSync(target)&&fs.statSync(target).isDirectory()?path.join(target,'index.html'):target;if(!fs.existsSync(local))errors.push(`${file}: 檔案不存在 ${value}`);else if(url.hash&&url.pathname==='/' + file.slice(7)){try{if(!seen.has(decodeURIComponent(url.hash.slice(1))))errors.push(`${file}: 錨點不存在 ${value}`)}catch{errors.push(`${file}: 無效錨點 ${value}`)}}});
+}
+if(fs.existsSync('public/admin/index.html'))errors.push('失效的管理頁不應公開');
+if(fs.existsSync('tests/fixtures/published-compatibility.json')){const baseline=JSON.parse(fs.readFileSync('tests/fixtures/published-compatibility.json','utf8'));for(const page of baseline.pages){const file=path.join('public',page.path);if(!fs.existsSync(file)){errors.push(`舊頁面路徑遺失：${page.path}`);continue}if(!/^202\d\d\d_/.test(page.path)&&!['about/index.html','links/index.html'].includes(page.path))continue;const $=load(fs.readFileSync(file,'utf8'));for(const id of page.legacy_heading_ids.filter(id=>id!=='Dr'))if(!$('[id]').toArray().some(el=>$(el).attr('id')===id))errors.push(`舊錨點遺失：${page.path}#${id}`)}}
+if(errors.length){console.error(errors.join('\n'));process.exitCode=1}else console.log(`PASS: ${files.length} 個 HTML、站內連結／資產、文章網址與舊錨點、草稿／舊整合檢查。`);

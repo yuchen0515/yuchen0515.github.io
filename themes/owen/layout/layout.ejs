@@ -1,0 +1,33 @@
+<%
+const pageName = is_archive() ? '文章索引' : is_category() ? page.category : is_tag() ? page.tag : (page.title || '');
+const pageTitle = pageName ? `${pageName} · ${config.title}` : config.title;
+const description = is_post() ? summary(page,160) : config.description;
+const canonical = config.url.replace(/\/$/,'') + (page.redirect_to || '/' + (page.path || '')).replace(/index\.html$/,'');
+%><!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <% if(page.redirect_to){ %><meta http-equiv="refresh" content="0;url=<%= page.redirect_to %>"><% } %>
+  <title><%= pageTitle %></title><meta name="description" content="<%= description %>">
+  <link rel="canonical" href="<%= canonical.replace(/index\.html$/,'') %>">
+  <meta property="og:title" content="<%= pageTitle %>"><meta property="og:description" content="<%= description %>"><meta property="og:url" content="<%= canonical %>"><meta property="og:type" content="<%= is_post() ? 'article' : 'website' %>">
+  <meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f7f6f2">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Owen Lin 的文章">
+  <link rel="stylesheet" href="/css/site.css"><link rel="stylesheet" href="/vendor/katex.min.css">
+  <script src="/js/theme.js"></script><script src="/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至內容</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="/" aria-label="Owen Lin 首頁">Owen Lin<span>林育辰</span></a>
+      <nav class="site-nav" aria-label="主要導覽"><a href="/archives/" <%- is_archive() ? 'aria-current="page"' : '' %>>文章</a><a href="/links/">資源</a><a href="/about/">關於</a></nav>
+      <div class="header-actions"><button type="button" class="icon-button" data-open-search aria-label="搜尋文章"><%- icon('search') %></button><button type="button" class="icon-button" data-toggle-theme aria-label="切換深色模式"><span class="light-icon"><%- icon('moon') %></span><span class="dark-icon"><%- icon('sun') %></span></button></div>
+    </div>
+  </header>
+  <main id="main" class="site-main"><%- body %></main>
+  <footer class="site-footer"><div><a href="/">Owen Lin 林育辰</a><span>技術、研究，以及沿途的思考。</span></div><div><a href="https://github.com/yuchen0515" target="_blank" rel="noopener noreferrer">GitHub <%- icon('arrow-up-right') %></a><a href="/atom.xml">RSS <%- icon('rss') %></a><span>© <%= new Date().getFullYear() %></span></div></footer>
+  <dialog class="search-dialog" data-search-dialog aria-labelledby="search-title"><form method="dialog" class="search-top"><h2 id="search-title">搜尋文章</h2><button class="icon-button" aria-label="關閉搜尋"><%- icon('x') %></button></form><label class="search-label" for="site-search">輸入標題、標籤或內文關鍵字</label><input id="site-search" type="search" autocomplete="off" placeholder="例如：語音辨識、NLP、競賽"><p class="search-status" data-search-status role="status">輸入關鍵字，尋找一篇文章。</p><div class="search-results" data-search-results></div></dialog>
+  <div class="toast" data-toast role="status" hidden></div>
+  <dialog class="image-dialog" data-image-dialog aria-label="圖片預覽"><button type="button" class="icon-button" data-close-image aria-label="關閉圖片"><%- icon('x') %></button><img alt=""></dialog>
+</body></html>

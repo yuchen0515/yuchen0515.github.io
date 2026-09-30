@@ -1,0 +1,18 @@
+intro: 寫下技術，也記錄思考。
+intro_en: Notes on technology, research, and everything along the way.
+bio: 關於人工智慧、軟體開發，還有求知路上的觀察與故事。
+likes_endpoint: ''
+support_url: ''
+comments:
+  repo: yuchen0515/yuchen0515.github.io
+  issues:
+    '～關於我的文章規劃～': 11
+    '那些路過的-me-因們': 10
+    'MIRlab-owen-lin-RD-page': 8
+    '賽後心得-「看見你的聲音-語音辨識後修正」': 9
+    links: 6
+giscus:
+  enabled: false
+  repo_id: ''
+  category: ''
+  category_id: ''

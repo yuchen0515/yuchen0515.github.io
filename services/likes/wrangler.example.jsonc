@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "owen-blog-likes",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "observability": { "enabled": false },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://yuchen0515.github.io,http://localhost:4000,http://127.0.0.1:4000"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "owen-blog-likes",
+      "database_id": "<COPY_REAL_DATABASE_ID_FROM_WRANGLER_D1_CREATE>",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": { "crons": ["17 3 * * *"] }
+}
