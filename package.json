@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build": "node tools/build.mjs",
-    "preview": "hexo server --ip 127.0.0.1 --config _config.yml,_config.preview.yml",
-    "server": "hexo server --ip 127.0.0.1 --config _config.yml,_config.preview.yml",
+    "preview": "node tools/preview.mjs",
+    "server": "node tools/preview.mjs",
     "write": "node tools/writer/server.mjs",
     "new": "node tools/post.mjs new",
     "publish": "node tools/post.mjs publish",

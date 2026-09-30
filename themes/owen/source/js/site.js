@@ -47,6 +47,47 @@
   const postPath=engagement.dataset.postPath.replace(/index\.html$/,'');const endpoint=engagement.dataset.likesEndpoint.replace(/\/$/,'');
   async function likes(method,desired){const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);try{const response=await fetch(endpoint+'/likes'+(method==='GET'?'?path='+encodeURIComponent(postPath):''),{method,headers:{'X-Visitor-Id':visitorId,...(method==='POST'?{'Content-Type':'application/json'}:{})},body:method==='POST'?JSON.stringify({path:postPath,liked:desired}):undefined,signal:controller.signal});if(!response.ok)throw Error('unavailable');const data=await response.json();if(!Number.isInteger(data.count)||typeof data.liked!=='boolean')throw Error();liked=data.liked;like.setAttribute('aria-pressed',String(liked));likeCount.textContent=data.count;likeStatus.textContent='';}finally{clearTimeout(timeout)}}
   if(like){likes('GET').catch(()=>{liked=null;likeStatus.textContent='目前無法確認愛心狀態，點擊後可再試一次。'}).finally(()=>like.disabled=false);like.addEventListener('click',async()=>{like.disabled=true;try{if(liked===null)await likes('GET');await likes('POST',!liked);toast(liked?'謝謝你的喜歡。':'已取消愛心。')}catch{liked=null;likeStatus.textContent='尚未確認愛心是否送出，請稍後再試；再次點擊會先確認最新狀態。'}finally{like.disabled=false}})}
-  const issue=engagement.dataset.issue,repo=engagement.dataset.repo,comments=$('[data-comments]');
-  if(issue&&comments){const load=async()=>{try{const response=await fetch(`https://api.github.com/repos/${repo}/issues/${issue}/comments?per_page=100`,{headers:{Accept:'application/vnd.github+json'}});if(!response.ok)throw Error();const data=await response.json();if(!data.length){comments.textContent='目前還沒有留言，歡迎開始這段對話。';return}for(const item of data){const article=document.createElement('article');article.className='comment';const header=document.createElement('a');header.className='comment-header';header.href=item.html_url;header.target='_blank';header.rel='noopener noreferrer';header.textContent=`${item.user.login} · ${new Date(item.created_at).toLocaleDateString('zh-TW')}`;const body=document.createElement('p');body.className='comment-body';body.textContent=item.body;article.append(header,body);comments.append(article)}}catch{comments.textContent='暫時無法載入留言，仍可前往 GitHub 閱讀與回覆。'}};if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){observer.disconnect();load()}},{rootMargin:'200px'});observer.observe(comments)}else load()}
+  const widget=$('[data-comment-widget]');if(!widget||widget.dataset.commentConfigured!=='true')return;
+  const commentStatus=$('[data-comment-status]'),retry=$('[data-comment-retry]'),fallback=$('[data-comment-fallback]');
+  const commentOrigin='https://giscus.app';let commentStarted=false,commentAttempt=0,commentTimeout,commentFrame,commentFailed=false;
+  const commentTheme=()=>{
+    const dark=document.documentElement.dataset.theme==='dark';
+    if(['127.0.0.1','localhost','[::1]'].includes(location.hostname))return dark?'dark_dimmed':'light';
+    return new URL('/css/comments-'+(dark?'dark':'light')+'.css',$('link[rel=canonical]').href).href;
+  };
+  function syncCommentTheme(){commentFrame?.contentWindow?.postMessage({giscus:{setConfig:{theme:commentTheme()}}},commentOrigin)}
+  new MutationObserver(syncCommentTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  new MutationObserver(()=>{
+    const frame=widget.querySelector('iframe');if(!frame||frame===commentFrame)return;
+    commentFrame=frame;frame.title='文章留言';frame.addEventListener('load',syncCommentTheme);syncCommentTheme();
+  }).observe(widget,{childList:true,subtree:true});
+  function commentError(){
+    clearTimeout(commentTimeout);commentFailed=true;widget.setAttribute('aria-busy','false');commentStatus.hidden=false;commentStatus.textContent='留言暫時無法載入，請檢查連線後再試一次。';retry.hidden=false;if(fallback)fallback.hidden=false;
+  }
+  window.addEventListener('message',event=>{
+    if(event.origin!==commentOrigin||event.source!==commentFrame?.contentWindow||!event.data?.giscus)return;
+    const message=event.data.giscus;
+    if(typeof message.error==='string'&&!message.error.includes('Discussion not found')){commentError();return}
+    if(commentFailed||!Number.isFinite(message.resizeHeight)||message.resizeHeight<=0)return;
+    clearTimeout(commentTimeout);widget.setAttribute('aria-busy','false');commentStatus.textContent='';commentStatus.hidden=true;retry.hidden=true;if(fallback)fallback.hidden=true;
+  });
+  function loadComments(){
+    if(commentStarted)return;commentStarted=true;const attempt=++commentAttempt;commentFailed=false;
+    try{
+      const canonicalPath=new URL($('link[rel=canonical]').href).pathname;
+      if(location.pathname!==canonicalPath&&decodeURI(location.pathname.replace(/\/index\.html$/,'/'))===decodeURI(canonicalPath)){
+        const normalized=new URL(location.href);normalized.pathname=canonicalPath;history.replaceState(history.state,'',normalized.href);
+      }
+    }catch{}
+    commentFrame=null;widget.replaceChildren();widget.setAttribute('aria-busy','true');commentStatus.hidden=false;commentStatus.textContent='正在載入留言…';retry.hidden=true;if(fallback)fallback.hidden=true;
+    const failed=()=>{if(attempt===commentAttempt)commentError()};
+    const script=document.createElement('script');script.src=commentOrigin+'/client.js';script.async=true;script.crossOrigin='anonymous';
+    const attributes={repo:engagement.dataset.repo,'repo-id':widget.dataset.commentRepoId,category:widget.dataset.commentCategory,'category-id':widget.dataset.commentCategoryId,mapping:'pathname',strict:'1','reactions-enabled':'0','emit-metadata':'0','input-position':'top',theme:commentTheme(),lang:'zh-TW',loading:'lazy'};
+    for(const [key,value] of Object.entries(attributes))script.setAttribute('data-'+key,value);
+    script.onerror=failed;commentTimeout=setTimeout(failed,20000);widget.append(script);
+  }
+  retry.addEventListener('click',()=>{commentStarted=false;loadComments()});
+  $('[data-open-comments]')?.addEventListener('click',loadComments);
+  if(new URLSearchParams(location.search).has('giscus')){loadComments();widget.scrollIntoView({block:'start'})}
+  if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){observer.disconnect();loadComments()}},{rootMargin:'200px'});observer.observe(widget)}else loadComments();
 })();

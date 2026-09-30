@@ -125,6 +125,27 @@ try {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     for (const route of pages) await check(`${width}px ${route} layout and local images`, async () => { await visit(page, route); await localImages(page); return noOverflow(page); });
   }
+  await check('Long-form text, code, navigation, and school logos stay comfortably readable', async () => {
+    const readings=[];
+    for (const width of [320,390,1440]) {
+      await page.setViewportSize({width,height:900});
+      await visit(page,'/about/');
+      await localImages(page);
+      const sizes=await page.evaluate(()=>{
+        const prose=document.querySelector('.prose');
+        const style=getComputedStyle(prose);
+        const logo=[...prose.querySelectorAll('.school-logo')].find(el=>!el.closest('[hidden]'));
+        return {prose:parseFloat(style.fontSize),lineHeight:parseFloat(style.lineHeight),navigation:parseFloat(getComputedStyle(document.querySelector('.site-nav')).fontSize),schoolLogo:logo?.getBoundingClientRect().height,schoolLogoCount:prose.querySelectorAll('.school-logo').length};
+      });
+      assert.ok(sizes.prose>=(width<641?18:19),JSON.stringify(sizes));
+      assert.ok(sizes.lineHeight>=34,JSON.stringify(sizes));
+      assert.ok(sizes.navigation>=15,JSON.stringify(sizes));
+      assert.ok(sizes.schoolLogo>=38&&sizes.schoolLogoCount>=6,JSON.stringify(sizes));
+      await noOverflow(page);
+      readings.push({width,...sizes});
+    }
+    return {readings};
+  });
   await check('Ctrl+K searches real article index and returns navigable results', async () => {
     await visit(page, '/'); await page.keyboard.press('Control+k');
     await page.locator('[data-search-dialog][open]').waitFor();
@@ -189,6 +210,8 @@ try {
     await page.locator('.mermaid svg').waitFor({ timeout: 20000 }); assert.ok(await page.locator('.katex').count());
     const geometry = await page.locator('.katex-html').first().evaluate(el => { const leaves = [...el.querySelectorAll('span')].filter(span => !span.childElementCount); const x = leaves.find(span => span.textContent.trim() === 'x').getBoundingClientRect(); const two = leaves.find(span => span.textContent.trim() === '2').getBoundingClientRect(); return { x: x.top + x.height / 2, exponent: two.top + two.height / 2 }; });
     assert.ok(geometry.exponent < geometry.x - 2, `The mathematical exponent must render above its base: ${JSON.stringify(geometry)}`);
+    const codeFont=await page.locator('.code-block pre code').first().evaluate(el=>parseFloat(getComputedStyle(el).fontSize));
+    assert.ok(codeFont>=15,`Code is too small to read: ${codeFont}px`);
     await page.locator('.code-copy').click(); assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'print("browser acceptance")\n');
     assert.equal(await page.locator('[data-toast]').textContent(), '程式碼已複製');
     for (const width of [320, 390, 1440]) { await page.setViewportSize({ width, height: 844 }); await noOverflow(page); }
@@ -247,6 +270,8 @@ try {
     await page.setViewportSize({ width: 320, height: 844 }); await shot(page, 'home-mobile-320', true);
     await page.setViewportSize({ width: 1440, height: 900 }); await visit(page, posts.find(post => post.url.includes('202207')).url); await localImages(page); await shot(page, 'article-desktop');
     await visit(page, '/about/'); await shot(page, 'about-chinese-desktop');
+    await page.locator('.prose h2,.prose h3').filter({hasText:'教育背景'}).first().scrollIntoViewIfNeeded(); await shot(page, 'about-education-desktop');
+    await page.setViewportSize({width:390,height:844}); await shot(page, 'about-education-mobile');
     await page.setViewportSize({ width: 390, height: 844 }); await page.locator('[data-language-button="en"]').click(); await shot(page, 'about-english-mobile');
     await page.locator('.prose h2').filter({ hasText: '程式相關活動' }).scrollIntoViewIfNeeded(); await shot(page, 'about-common-appendix-mobile');
   });

@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const cheerio = require('cheerio');
 const {languageParts} = require('../lib/markdown.cjs');
+require('../lib/public-assets.cjs').installPublicAssetFilter(hexo);
 const plain = html => cheerio.load(html).text().replace(/\s+/g,' ').trim();
 hexo.extend.helper.register('icon', function(name) {
   if (!/^[a-z-]+$/.test(name)) throw new Error('Invalid icon name');
@@ -23,7 +24,9 @@ hexo.extend.helper.register('content_toc', function(content) {
   return $('h2[id],h3[id]').map((i,el)=>({id:$(el).attr('id'),title:$(el).text(),level:el.tagName,language:$(el).closest('[data-language]').attr('data-language') || 'all'})).get();
 });
 hexo.extend.helper.register('issue_number', function(post) {
-  return post.github_issue || this.theme.comments?.issues?.[post.slug] || (post.path?.startsWith('links/') ? this.theme.comments?.issues?.links : null);
+  const issue = post.github_issue ?? this.theme.comments?.issues?.[post.slug] ?? (post.path?.startsWith('links/') ? this.theme.comments?.issues?.links : null);
+  if (issue !== null && issue !== undefined && (!Number.isInteger(issue) || issue <= 0)) throw new Error(`github_issue 必須是實際的正整數 Issue 編號：${post.slug || post.path}`);
+  return issue;
 });
 hexo.extend.generator.register('site-search', function(locals) {
   return {path:'search.json',data:JSON.stringify(locals.posts.sort('-date').map(post => {
@@ -39,5 +42,11 @@ hexo.extend.generator.register('legacy-pages',()=>[
 hexo.extend.filter.register('before_generate', function() {
   const settings = hexo.theme.config;
   if (settings.support_url && !/^https:\/\//.test(settings.support_url)) throw new Error('support_url 必須是已設定的 HTTPS 公開贊助頁。');
-  if (settings.giscus?.enabled && (!settings.giscus.repo_id || !settings.giscus.category_id)) throw new Error('請先完成 giscus 設定，不能使用空白或範例 ID。');
+  if (settings.comments?.enabled !== false) {
+    if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(settings.comments?.repo || '')) throw new Error('comments.repo 必須是實際 GitHub repo 的 owner/name。');
+    if (Object.values(settings.comments?.issues || {}).some(issue => !Number.isInteger(issue) || issue <= 0)) throw new Error('comments.issues 必須使用實際的正整數 Issue 編號。');
+    const giscus = settings.giscus || {};
+    if (giscus.enabled && Boolean(giscus.category) !== Boolean(giscus.category_id)) throw new Error('giscus.category 與 category_id 必須一起填入 GitHub 的實際分類資料。');
+    if (giscus.enabled && giscus.category_id && !giscus.repo_id) throw new Error('giscus.repo_id 必須填入實際 GitHub repo node ID。');
+  }
 });

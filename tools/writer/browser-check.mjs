@@ -28,7 +28,8 @@ let browser;
 const errors = [];
 try {
   browser = await chromium.launch({ channel: 'chrome', headless: true });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   await page.getByRole('button', { name: '測試文章', exact: true }).click();
@@ -36,6 +37,9 @@ try {
   await frame.getByRole('heading', { name: '一篇新文章' }).waitFor();
   assert.equal(await page.evaluate(() => document.body.dataset.compromised), undefined);
   assert.equal(await frame.locator('body').evaluate((element) => getComputedStyle(element).paddingTop), '28px');
+  assert.equal(await frame.locator('body').evaluate((element) => getComputedStyle(element).fontSize), '19px');
+  assert.equal(await page.locator('#editor').evaluate((element) => getComputedStyle(element).fontSize), '16px');
+  assert.equal(await page.getByRole('button', { name: '同步捲動', exact: true }).getAttribute('aria-pressed'), 'true');
   assert.ok(await frame.locator('.katex').count());
   assert.equal(await frame.locator('.katex').evaluate((element) => getComputedStyle(element).fontFamily.includes('KaTeX')), true);
   const mathGeometry = await frame.locator('.katex-html').first().evaluate((element) => {
@@ -83,6 +87,7 @@ try {
     await page.setViewportSize({ width, height: 844 });
     await page.getByRole('tab', { name: '預覽', exact: true }).click();
     assert.equal(await page.getByRole('button', { name: '加入圖片', exact: true }).isVisible(), true);
+    assert.equal(await page.locator('.sync-indicator').isVisible(), true, 'Mobile sync control must show its on/off state');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}px viewport must not overflow`);
     await page.screenshot({ path: path.join(root, `mobile-${width}.png`), fullPage: true });
   }
@@ -93,6 +98,7 @@ try {
   assert.equal((await store.list()).filter((item) => item.kind === 'posts').length, 1);
   assert.equal((await store.list()).filter((item) => item.kind === 'drafts').length, 1);
   await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: '同步捲動', exact: true }).click();
   const longSource = '---\ntitle: 長文捲動驗證\n---\n\n## 長文內容\n\n' + Array.from({ length: 80 }, (_, index) => `第 ${index + 1} 段，保留文章預覽的閱讀位置。`).join('\n\n') + '\n\n<script>parent.document.body.dataset.inlineProbe="yes"</script>\n<script src="/app.js"></script>\n<img alt="事件處理測試" src="/images/absent.png" onerror="parent.document.body.dataset.eventProbe=\'yes\'">\n<iframe src="/"></iframe>\n<form action="/api/drafts" method="post"><input name="title" value="不應建立"><button type="submit">表單測試</button></form>\n';
   await page.locator('#editor').fill(longSource);
   await frame.getByRole('heading', { name: '長文內容', exact: true }).waitFor();
@@ -109,10 +115,88 @@ try {
   await frame.getByRole('button', { name: '表單測試', exact: true }).click();
   assert.equal((await store.list()).filter((item) => item.kind === 'drafts').length, 1, 'Preview forms must not create files');
   assert.equal(await page.evaluate(async () => (await fetch('/api/library')).status), 403, 'Even same-origin requests still require the startup token');
+  await fs.writeFile(path.join(root, 'source', 'images', 'sync.png'), png);
+  const syncSource = '---\ntitle: 同步捲動驗證\n---\n\n' + Array.from({ length: 14 }, (_, index) => `## 對照小節 ${index + 1}\n\n小節 ${index + 1} 的第一段文字。\n\n小節 ${index + 1} 的第二段文字。\n\n${index === 2 ? '<img src="/images/sync.png" class="sync-image">\n\n' : ''}${index === 10 ? '這是會在較窄編輯區自動換行的長段落。'.repeat(20) + '\n\n' : ''}`).join('') + '<style>.writer-preview .sync-image{display:block;height:480px;width:300px;object-fit:contain}</style>\n';
+  await page.locator('#editor').fill(syncSource);
+  await frame.getByRole('heading', { name: '對照小節 14', exact: true }).waitFor();
+  await page.getByRole('button', { name: '同步捲動', exact: true }).click();
+  const sourcePosition = async (heading) => page.locator('#editor').evaluate((element, title) => {
+    const line = element.value.split('\n').findIndex((text) => text === `## ${title}`);
+    const css = getComputedStyle(element);
+    return parseFloat(css.paddingTop) + line * parseFloat(css.lineHeight);
+  }, heading);
+  const sixthSourceTop = await sourcePosition('對照小節 6');
+  await page.locator('#editor').evaluate((element, top) => { element.scrollTop = top; }, sixthSourceTop);
+  await page.waitForFunction(() => Math.abs([...document.getElementById('preview').contentDocument.querySelectorAll('h2')].find((heading) => heading.textContent === '對照小節 6').getBoundingClientRect().top) < 4);
+  const forwardSync = await frame.getByRole('heading', { name: '對照小節 6', exact: true }).evaluate((element) => element.getBoundingClientRect().top);
+  const eighthSourceTop = await sourcePosition('對照小節 8');
+  await frame.getByRole('heading', { name: '對照小節 8', exact: true }).evaluate((element) => window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top));
+  await page.waitForFunction((top) => Math.abs(document.getElementById('editor').scrollTop - top) < 4, eighthSourceTop);
+  const reverseSync = await page.locator('#editor').evaluate((element) => element.scrollTop);
+  const stableBefore = await page.locator('#preview').evaluate((element) => ({ editor: document.getElementById('editor').scrollTop, preview: element.contentWindow.scrollY }));
+  await page.waitForTimeout(300);
+  assert.deepEqual(await page.locator('#preview').evaluate((element) => ({ editor: document.getElementById('editor').scrollTop, preview: element.contentWindow.scrollY })), stableBefore, 'Bidirectional scroll must settle without feedback loops');
+  await page.getByRole('button', { name: '同步捲動', exact: true }).click();
+  await page.locator('#preview').evaluate((element) => element.contentWindow.scrollTo(0, 200));
+  await page.waitForTimeout(100);
+  assert.equal(await page.locator('#editor').evaluate((element) => element.scrollTop), reverseSync, 'Disconnected preview scrolling must leave the source unchanged');
+  await page.locator('#editor').evaluate((element) => { element.scrollTop = 800; });
+  await page.waitForTimeout(100);
+  assert.equal(await page.locator('#preview').evaluate((element) => element.contentWindow.scrollY), 200, 'Disconnected source scrolling must leave the preview unchanged');
+  const preferencePage = await page.context().newPage();
+  await preferencePage.goto(`http://127.0.0.1:${server.address().port}/`);
+  assert.equal(await preferencePage.getByRole('button', { name: '同步捲動', exact: true }).getAttribute('aria-pressed'), 'false', 'Scroll preference must survive another page load');
+  await preferencePage.close();
+  await page.getByRole('button', { name: '同步捲動', exact: true }).click();
+  await page.locator('#editor').evaluate((element, top) => { element.scrollTop = top; }, sixthSourceTop);
+  await page.waitForFunction(() => Math.abs([...document.getElementById('preview').contentDocument.querySelectorAll('h2')].find((heading) => heading.textContent === '對照小節 6').getBoundingClientRect().top) < 4);
+  await frame.locator('.sync-image').evaluate((image) => { image.style.height = '840px'; });
+  await page.waitForFunction(() => Math.abs([...document.getElementById('preview').contentDocument.querySelectorAll('h2')].find((heading) => heading.textContent === '對照小節 6').getBoundingClientRect().top) < 4);
+  assert.ok(Math.abs(await page.locator('#editor').evaluate((element) => element.scrollTop) - sixthSourceTop) < 4, 'Resizing an image must preserve the source reading position');
+  const imageResizeSourceOffset = await page.locator('#editor').evaluate((element) => element.scrollTop) - sixthSourceTop;
+  await page.locator('#editor').evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await page.waitForFunction(() => { const win = document.getElementById('preview').contentWindow; return Math.abs(win.scrollY - (win.document.documentElement.scrollHeight - win.innerHeight)) < 4; });
+  const syncResult = { sourceToPreviewHeadingOffset: forwardSync, previewToSourceOffset: reverseSync - eighthSourceTop, imageResizeSourceOffset, preferenceRetained: true, independentScroll: true, stable: true };
+  const typingResults = [];
+  for (const position of ['middle', 'end']) {
+    await page.locator('#editor').evaluate((element, where) => {
+      const caret = where === 'middle' ? element.value.indexOf('小節 8 的第二段文字。') + '小節 8 的第二段文字。'.length : element.value.length;
+      element.focus(); element.setSelectionRange(caret, caret);
+    }, position);
+    const finalParagraph = position === 'middle' ? '中段實際輸入的最後一段。' : '末尾實際輸入的最後一段。';
+    await page.keyboard.type(`\n\n實際鍵盤連續輸入，多個段落保持游標的位置。\n\n第二個新段落，預覽更新後仍留在原來的編輯位置。\n\n${finalParagraph}`);
+    const before = await page.locator('#editor').evaluate((element) => ({ scrollTop: element.scrollTop, caret: element.selectionStart }));
+    await frame.getByText(finalParagraph, { exact: true }).waitFor();
+    const after = await page.locator('#editor').evaluate((element) => ({ scrollTop: element.scrollTop, caret: element.selectionStart, focused: document.activeElement === element }));
+    assert.ok(Math.abs(after.scrollTop - before.scrollTop) < 4, `Typing at ${position} must keep the source viewport: ${JSON.stringify({ before, after })}`);
+    assert.equal(after.caret, before.caret, `Typing at ${position} must keep the caret`);
+    assert.equal(after.focused, true);
+    typingResults.push({ position, scrollBefore: before.scrollTop, scrollAfter: after.scrollTop, caretRetained: true });
+  }
+  syncResult.actualTyping = typingResults;
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('tab', { name: '預覽', exact: true }).click();
+  await page.locator('#preview').evaluate((element) => element.contentWindow.scrollTo(0, 2400));
+  await page.waitForTimeout(150);
+  const mobilePreviewBefore = await page.locator('#preview').evaluate((element) => element.contentWindow.scrollY);
+  await page.getByRole('tab', { name: 'Markdown', exact: true }).click();
+  await page.waitForTimeout(150);
+  const mobileSourceFirst = await page.locator('#editor').evaluate((element) => element.scrollTop);
+  assert.ok(mobileSourceFirst > 400, `Switching from a scrolled preview must not reset the source: ${mobileSourceFirst}`);
+  await page.getByRole('tab', { name: '預覽', exact: true }).click();
+  await page.waitForTimeout(150);
+  const mobilePreviewAfter = await page.locator('#preview').evaluate((element) => element.contentWindow.scrollY);
+  assert.ok(Math.abs(mobilePreviewAfter - mobilePreviewBefore) < 4, `Mobile tab round-trip must retain preview position: ${mobilePreviewBefore} → ${mobilePreviewAfter}`);
+  await page.getByRole('tab', { name: 'Markdown', exact: true }).click();
+  await page.waitForTimeout(150);
+  const mobileSourceAfter = await page.locator('#editor').evaluate((element) => element.scrollTop);
+  assert.ok(Math.abs(mobileSourceAfter - mobileSourceFirst) < 4, `Mobile tab round-trip must retain source position: ${mobileSourceFirst} → ${mobileSourceAfter}`);
+  syncResult.mobileTabs = { previewBefore: mobilePreviewBefore, previewAfter: mobilePreviewAfter, sourceBefore: mobileSourceFirst, sourceAfter: mobileSourceAfter };
+  await page.screenshot({ path: path.join(root, 'scroll-sync.png'), fullPage: true });
   await page.locator('#editor').fill('---\ntitle: 標記錯誤驗證\n---\n\n<!-- LANG:ZH START -->\n正文');
   await page.getByRole('alert').filter({ hasText: '雙語標記缺少配對' }).waitFor();
   assert.deepEqual(errors, []);
-  const receipt = { passed: true, root, katexVersion: require('katex/package.json').version, mathGeometry, previewScroll: { before: scrollBefore, after: scrollAfter }, checks: ['production renderer', 'sandbox inline/event/external scripts blocked', 'preview forms blocked', 'same-origin API still requires token', 'iframe CSS and KaTeX font', 'superscript above base', 'bilingual body and title preview', 'image attachment', 'clipboard paste handler', 'image drop handler', 'explicit save and revisions', '390/320px no overflow', 'draft does not publish', 'preview scroll retained', 'bilingual syntax error explains correction'], pageErrors: errors };
+  const receipt = { passed: true, root, katexVersion: require('katex/package.json').version, mathGeometry, previewScroll: { before: scrollBefore, after: scrollAfter }, scrollSync: syncResult, checks: ['production renderer', 'sandbox inline/event/external scripts blocked', 'preview forms blocked', 'same-origin API still requires token', 'iframe CSS and KaTeX font', 'superscript above base', 'bilingual body and title preview', 'image attachment', 'clipboard paste handler', 'image drop handler', 'explicit save and revisions', '390/320px no overflow', 'draft does not publish', 'preview scroll retained', 'bilingual syntax error explains correction', 'readable writer and preview typography', 'source-to-preview block alignment', 'preview-to-source block alignment', 'scroll sync settles without loops', 'disconnected independent scrolling', 'scroll preference retained', 'image resize realigns current block', 'long wrapped source reaches preview bottom', 'real middle typing retains source viewport and caret', 'real end typing retains source viewport and caret', 'mobile preview tab round-trip retains reading position', 'mobile source tab round-trip retains reading position'], pageErrors: errors };
   await fs.writeFile(path.join(root, 'receipt.json'), JSON.stringify(receipt, null, 2));
   console.log(JSON.stringify(receipt, null, 2));
 } finally {

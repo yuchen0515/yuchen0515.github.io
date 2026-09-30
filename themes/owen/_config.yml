@@ -4,6 +4,7 @@ bio: 關於人工智慧、軟體開發，還有求知路上的觀察與故事。
 likes_endpoint: ''
 support_url: ''
 comments:
+  enabled: true
   repo: yuchen0515/yuchen0515.github.io
   issues:
     '～關於我的文章規劃～': 11
@@ -12,7 +13,7 @@ comments:
     '賽後心得-「看見你的聲音-語音辨識後修正」': 9
     links: 6
 giscus:
-  enabled: false
-  repo_id: ''
+  enabled: true
+  repo_id: R_kgDOHSayAQ
   category: ''
   category_id: ''

@@ -40,7 +40,7 @@
           <textarea id="editor" aria-label="Markdown 原文" spellcheck="false" disabled placeholder="從左側開啟文章，或新增草稿。"></textarea>
         </section>
         <section class="preview-panel" id="preview-panel" aria-label="文章預覽區">
-          <div class="pane-label"><span>文章預覽</span><span>與網站使用相同 renderer</span></div>
+          <div class="pane-label preview-label"><span>文章預覽</span><button id="scroll-sync" class="sync-button" type="button" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 1 1 0 10h-2M8 12h8"/></svg>同步捲動<span class="sync-indicator" aria-hidden="true"></span></button></div>
           <iframe id="preview" title="文章預覽" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
         </section>
       </div>
