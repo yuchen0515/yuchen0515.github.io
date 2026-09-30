@@ -21,7 +21,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: python3 tools/git-history/check-authorship.py history --repo . --all
-      - run: npm test
+      - name: Run tests
+        shell: bash
+        run: |
+          set +e
+          npm test > "$RUNNER_TEMP/site-tests.log" 2>&1
+          test_status=$?
+          set -e
+          cat "$RUNNER_TEMP/site-tests.log"
+          if [ "$test_status" -ne 0 ]; then
+            python3 tools/report-test-status.py "$RUNNER_TEMP/site-tests.log"
+          fi
+          exit "$test_status"
       - run: npm run build
       - run: npm run check
       - uses: actions/upload-pages-artifact@v4
