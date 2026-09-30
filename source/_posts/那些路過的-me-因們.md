@@ -1,6 +1,6 @@
 ---
 title: 那些路過的 me 因們
-title_en: "Those Passing Memes"
+title_en: "Memes I Ran Into Along the Way"
 author: Owen Lin 林育辰
 mathjax: true 
 mermaid: true
@@ -99,8 +99,8 @@ date: 2023-05-11 22:50:00
 
 ## Note
 
-The following memes do not represent the official stance of this blog XD
-If you have good memes, feel free to share them! They might not all be memes, just funny stuff (?)
+The memes below do not reflect the views of this station XD.
+Got a good meme? Feel free to send it my way! Some of these might not even count as memes, just funny things (?)
 
 ---
 
@@ -124,7 +124,7 @@ If you have good memes, feel free to share them! They might not all be memes, ju
     <img src="../images/2023-05-11-22-55-11.png" width=350 alt="">
 </center>
 
-> Source: [Data Scientist Daily Work](https://www.facebook.com/dscareer)
+> Source: [Data Scientist Daily Work](https://www.facebook.com/dscareer) (資料科學家的工作日常)
 
 ---
 
@@ -148,7 +148,7 @@ If you have good memes, feel free to share them! They might not all be memes, ju
     <img src="../images/2023-05-11-23-00-01.png" width=350 alt="">
 </center>
 
-> Source: FB - Passerby / NTU Liberal Arts
+> Source: FB - 路觀 / 台大博雅
 
 ---
 
@@ -156,7 +156,7 @@ If you have good memes, feel free to share them! They might not all be memes, ju
     <img src="../images/2023-05-11-23-00-46.png" width=350 alt="">
 </center>
 
-> Source: Oshi no Ko / FB - Anime Headquarters 2.0
+> Source: Oshi no Ko / FB - 動漫本部 2.0
 
 ---
 
@@ -172,6 +172,6 @@ If you have good memes, feel free to share them! They might not all be memes, ju
     <img src="../images/2023-05-11-23-06-00.png" width=350 alt="">
 </center>
 
-> Source: FB - Won't Be Cold ([Post](https://m.facebook.com/photo/?fbid=651685160294615&set=a.3017070771719584))
+> Source: FB - 不會冷 ([Post](https://m.facebook.com/photo/?fbid=651685160294615&set=a.3017070771719584))
 
 <!-- LANG:EN END -->

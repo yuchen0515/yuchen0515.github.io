@@ -12,7 +12,7 @@ assert.ok(['127.0.0.1', 'localhost'].includes(base.hostname), 'Browser acceptanc
 const run = new Date().toISOString().replace(/[:.]/g, '-');
 const output = path.join(project, 'audit', 'browser', run);
 await fs.mkdir(output, { recursive: true });
-const receipt = { startedAt: new Date().toISOString(), base: base.href, cases: [], pageErrors: [], localFailures: [], externalFailures: [], screenshots: [], fixtures: [] };
+const receipt = { startedAt: new Date().toISOString(), base: base.href, cases: [], pageErrors: [], localFailures: [], externalFailures: [], navigationCancellations: [], screenshots: [], fixtures: [] };
 const require = createRequire(import.meta.url);
 const { renderMarkdown } = require('../lib/markdown.cjs');
 const cheerio = require('cheerio');
@@ -43,7 +43,12 @@ function observe(page) {
   page.on('requestfailed', request => {
     const url = new URL(request.url());
     if (!['http:', 'https:'].includes(url.protocol)) return;
-    const failure = JSON.stringify({ url: url.href, error: request.failure()?.errorText || 'request failed' });
+    const error = request.failure()?.errorText || 'request failed';
+    if (url.origin === 'https://giscus.app' && request.resourceType() === 'document' && error === 'net::ERR_ABORTED') {
+      receipt.navigationCancellations.push({ url: url.href, error });
+      return;
+    }
+    const failure = JSON.stringify({ url: url.href, error });
     if (url.origin === base.origin && ['image', 'script', 'stylesheet', 'font'].includes(request.resourceType())) localBroken.add(failure);
     else if (url.origin !== base.origin && url.origin !== new URL(API).origin) externalBroken.add(failure);
   });
@@ -189,6 +194,27 @@ try {
     await page.evaluate(id => { location.hash = id; }, englishId);
     await page.waitForFunction(() => !document.querySelector('[data-language="en"]').hidden);
     return { sections: original.map(({ language, text, headings }) => ({ language, characters: text.length, headings })), common };
+  });
+  await check('All six English versions switch fully and English heading links reopen the right language', async () => {
+    const details=[];
+    for (const route of [...posts.map(post=>post.url), '/about/', '/links/']) {
+      await visit(page,route);
+      const originalTitle=await page.locator('[data-title-zh]').textContent();
+      await page.locator('[data-language-button="en"]').click();
+      assert.equal(await page.locator('[data-language="zh"]').isVisible(),false,route);
+      assert.equal(await page.locator('[data-language="en"]').isVisible(),true,route);
+      assert.equal(await page.locator('[data-title-zh]').textContent(),await page.locator('[data-title-en]').getAttribute('data-title-en'));
+      const heading=await page.locator('[data-language="en"] h2[id],[data-language="en"] h3[id]').first().getAttribute('id');
+      await page.goto('about:blank');
+      await visit(page,route+'#'+encodeURIComponent(heading));
+      assert.equal(await page.locator('[data-language="en"]').isVisible(),true,route);
+      await noOverflow(page);await localImages(page);
+      await page.locator('[data-language-button="zh"]').click();
+      assert.equal(await page.locator('[data-title-zh]').textContent(),originalTitle);
+      assert.equal(await page.locator('[data-language="en"]').isVisible(),false,route);
+      details.push({route,englishHeading:heading});
+    }
+    return details;
   });
   await check('Article image opens and closes the real zoom dialog', async () => {
     const withImage = posts.find(post => post.url.includes('202207'));

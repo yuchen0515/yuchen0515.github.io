@@ -9,6 +9,8 @@ const yaml = require('js-yaml');
 
 const project = path.resolve(__dirname, '..');
 const settings = yaml.load(fs.readFileSync(path.join(project, 'themes/owen/_config.yml'), 'utf8'));
+// Pending setup is an explicit fixture, independent of the owner's live configuration.
+const pendingSettings = {...settings, giscus: {...settings.giscus, enabled: true, category: '', category_id: ''}};
 const helpers = new Map(), filters = new Map();
 const scriptPath = path.join(project, 'scripts/site.cjs');
 const hexo = {base_dir: project, theme: {config: settings}, extend: {
@@ -32,10 +34,10 @@ test('existing article discussions keep their exact real issue mappings', () => 
   for (const value of [0, -1, '12', 1.5]) assert.throws(() => issueNumber({slug: 'invalid-article', github_issue: value}), /正整數/);
 });
 
-test('on-site comments are the primary action, with no exposed authentication configuration', () => {
+test('pending setup fixture keeps on-site comments primary without authentication secrets', () => {
   const html = ejs.render(template, {
     page: {path: '202209_MIRlab-owen-lin-RD-page/index.html', slug: 'MIRlab-owen-lin-RD-page'},
-    theme: settings, issue_number: issueNumber, icon: () => '<svg aria-hidden="true"></svg>'
+    theme: pendingSettings, issue_number: issueNumber, icon: () => '<svg aria-hidden="true"></svg>'
   });
   assert.match(html, /href="#discussion" data-open-comments/);
   assert.match(html, /data-issue="8"/);
@@ -73,6 +75,6 @@ test('build rejects malformed comment repositories and issue configuration', () 
   assert.doesNotThrow(() => validate(settings));
   assert.throws(() => validate({...settings, comments: {repo: '', issues: {}}}), /comments.repo/);
   assert.throws(() => validate({...settings, comments: {repo: settings.comments.repo, issues: {article: 0}}}), /comments.issues/);
-  assert.throws(() => validate({...settings, giscus: {...settings.giscus, category: 'Incomplete'}}), /必須一起填入/);
+  assert.throws(() => validate({...settings, giscus: {...settings.giscus, category: 'Incomplete', category_id: ''}}), /必須一起填入/);
   assert.doesNotThrow(() => validate({...settings, comments: {enabled: false}}));
 });

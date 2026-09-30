@@ -49,17 +49,17 @@
   if(like){likes('GET').catch(()=>{liked=null;likeStatus.textContent='目前無法確認愛心狀態，點擊後可再試一次。'}).finally(()=>like.disabled=false);like.addEventListener('click',async()=>{like.disabled=true;try{if(liked===null)await likes('GET');await likes('POST',!liked);toast(liked?'謝謝你的喜歡。':'已取消愛心。')}catch{liked=null;likeStatus.textContent='尚未確認愛心是否送出，請稍後再試；再次點擊會先確認最新狀態。'}finally{like.disabled=false}})}
   const widget=$('[data-comment-widget]');if(!widget||widget.dataset.commentConfigured!=='true')return;
   const commentStatus=$('[data-comment-status]'),retry=$('[data-comment-retry]'),fallback=$('[data-comment-fallback]');
-  const commentOrigin='https://giscus.app';let commentStarted=false,commentAttempt=0,commentTimeout,commentFrame,commentFailed=false;
+  const commentOrigin='https://giscus.app';let commentStarted=false,commentAttempt=0,commentTimeout,commentFrame,commentFrameReady=false,commentFailed=false;
   const commentTheme=()=>{
     const dark=document.documentElement.dataset.theme==='dark';
     if(['127.0.0.1','localhost','[::1]'].includes(location.hostname))return dark?'dark_dimmed':'light';
     return new URL('/css/comments-'+(dark?'dark':'light')+'.css',$('link[rel=canonical]').href).href;
   };
-  function syncCommentTheme(){commentFrame?.contentWindow?.postMessage({giscus:{setConfig:{theme:commentTheme()}}},commentOrigin)}
+  function syncCommentTheme(){if(commentFrameReady)commentFrame?.contentWindow?.postMessage({giscus:{setConfig:{theme:commentTheme()}}},commentOrigin)}
   new MutationObserver(syncCommentTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   new MutationObserver(()=>{
     const frame=widget.querySelector('iframe');if(!frame||frame===commentFrame)return;
-    commentFrame=frame;frame.title='文章留言';frame.addEventListener('load',syncCommentTheme);syncCommentTheme();
+    commentFrame=frame;commentFrameReady=false;frame.title='文章留言';frame.addEventListener('load',()=>{if(commentFrame!==frame)return;commentFrameReady=true;syncCommentTheme()});
   }).observe(widget,{childList:true,subtree:true});
   function commentError(){
     clearTimeout(commentTimeout);commentFailed=true;widget.setAttribute('aria-busy','false');commentStatus.hidden=false;commentStatus.textContent='留言暫時無法載入，請檢查連線後再試一次。';retry.hidden=false;if(fallback)fallback.hidden=false;
@@ -79,7 +79,7 @@
         const normalized=new URL(location.href);normalized.pathname=canonicalPath;history.replaceState(history.state,'',normalized.href);
       }
     }catch{}
-    commentFrame=null;widget.replaceChildren();widget.setAttribute('aria-busy','true');commentStatus.hidden=false;commentStatus.textContent='正在載入留言…';retry.hidden=true;if(fallback)fallback.hidden=true;
+    commentFrame=null;commentFrameReady=false;widget.replaceChildren();widget.setAttribute('aria-busy','true');commentStatus.hidden=false;commentStatus.textContent='正在載入留言…';retry.hidden=true;if(fallback)fallback.hidden=true;
     const failed=()=>{if(attempt===commentAttempt)commentError()};
     const script=document.createElement('script');script.src=commentOrigin+'/client.js';script.async=true;script.crossOrigin='anonymous';
     const attributes={repo:engagement.dataset.repo,'repo-id':widget.dataset.commentRepoId,category:widget.dataset.commentCategory,'category-id':widget.dataset.commentCategoryId,mapping:'pathname',strict:'1','reactions-enabled':'0','emit-metadata':'0','input-position':'top',theme:commentTheme(),lang:'zh-TW',loading:'lazy'};

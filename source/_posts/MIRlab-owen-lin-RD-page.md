@@ -1,7 +1,7 @@
 ---
 title: MIRlab - owen.lin RD page
-title_en: "MIRlab - owen.lin RD page"
-lang_en: false
+title_en: "MIRlab - Owen Lin R&D Page"
+lang_en: true
 author: Owen Lin 林育辰
 mathjax: true
 mermaid: true
@@ -139,3 +139,126 @@ date: 2022-09-04 16:26:00
 - <i class="fa fa-github"></i> /<u>[yuchen0515](https://github.com/yuchen0515)</u>
 - <i class="fa fa-brands fa-linkedin"></i> /<u>[Yu-Chen Lin](https://www.linkedin.com/in/mathlin-owen/)</u>
 <!-- LANG:ZH END -->
+
+<!-- LANG:EN START -->
+- Ref. http://mirlab.org/jang/mir/howToBuildPersonalRdPage.asp
+- About this page: As a member of MIRlab, the Multimedia Information Retrieval Laboratory, I maintain an R&D page with information about my research and development work, including papers I have read, projects, and contact details. To make the page easier to maintain than one hosted on the laboratory's server, my MIRlab URL redirects here.
+
+---
+
+## Yu-Chen Lin 林育辰
+### Education
+- **M. S., Department of Computer Science and Information Engineering, National Taiwan University, Sep. 2022~present**
+- B. S., Department of Computer Science and Information Engineering, National Taiwan Normal University, Sep. 2018~Jun. 2022
+
+### Laboratory Responsibilities
+- NAS server administration
+- Technical Enablement Team
+- Speech Group --> NLP Group
+
+---
+
+### Research
+I am currently interning at Ansys, where my research focuses on applications of large language models, such as question answering in specialized domains and code completion for engineering applications. I expect to focus my master's thesis on a "Code Generator". I attend a Machine Learning Team Meeting every Wednesday morning and a Weekly Meeting every Friday morning. At the Friday meeting, I am the sole presenter and discuss my work with three or four experts. When I make new progress, I share and discuss it with MIRlab's NLP Group.
+
+Most of the papers I read focus on natural language processing. The list below is not an exhaustive record of everything I have read; it includes the papers that stand out to me.
+
+##### Papers
+- Nye, Maxwell, et al. "Show your work: Scratchpads for intermediate computation with language models." arXiv preprint arXiv:2112.00114 (2021).
+- Mohamed, Abdelrahman, et al. "Self-supervised speech representation learning: A review." IEEE Journal of Selected Topics in Signal Processing (2022). (Reading)
+- Yao, Shunyu, et al. "React: Synergizing reasoning and acting in language models." arXiv preprint arXiv:2210.03629 (2022).
+- Dua, Dheeru, et al. "Successive prompting for decomposing complex questions." arXiv preprint arXiv:2212.04092 (2022).
+- Schick, Timo, et al. "Toolformer: Language models can teach themselves to use tools." arXiv preprint arXiv:2302.04761 (2023).
+- Schäfer, Max, et al. "Adaptive test generation using a large language model." arXiv preprint arXiv:2302.06527 (2023).
+- Zhao, Wayne Xin, et al. "A survey of large language models." arXiv preprint arXiv:2303.18223 (2023). (Reading)
+- Peng, Baolin, et al. "Instruction tuning with gpt-4." arXiv preprint arXiv:2304.03277 (2023). (Reading)
+- Park, Joon Sung, et al. "Generative agents: Interactive simulacra of human behavior." arXiv preprint arXiv:2304.03442 (2023).
+- Chiang, Cheng-Han, and Hung-yi Lee. "Can Large Language Models Be an Alternative to Human Evaluations?." arXiv preprint arXiv:2305.01937 (2023).
+- Chen, Lingjiao, Matei Zaharia, and James Zou. "FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance." arXiv preprint arXiv:2305.05176 (2023).
+- Wang, Yue, et al. "Codet5+: Open code large language models for code understanding and generation." arXiv preprint arXiv:2305.07922 (2023). (Reading)
+- Wang, Peiyi, et al. "Large language models are not fair evaluators." arXiv preprint arXiv:2305.17926 (2023).
+- Thakur, Shailja, et al. "VeriGen: A Large Language Model for Verilog Code Generation." arXiv preprint arXiv:2308.00708 (2023).
+- Zheng, Lianmin, et al. "Judging LLM-as-a-judge with MT-Bench and Chatbot Arena." arXiv preprint arXiv:2306.05685 (2023).
+- He, Zhuolun, et al. "ChatEDA: A Large Language Model Powered Autonomous Agent for EDA." arXiv preprint arXiv:2308.10204 (2023).
+- Sun, Mingjie, et al. "A Simple and Effective Pruning Approach for Large Language Models." arXiv preprint arXiv:2306.11695 (2023). (Reading)
+
+##### Technical Articles
+> These are general technical articles, rather than necessarily scholarly articles.
+
+- [An Introduction to Neural Machine Translation: Translating English into Chinese with Transformer and TensorFlow 2](https://leemeng.tw/neural-machine-translation-with-transformer-and-tensorflow2.html#%E5%BB%BA%E7%AB%8B%E8%BC%B8%E5%85%A5%E7%AE%A1%E9%81%93)
+- [Self-supervised Learning and Its Applications to Speech Processing (A Short Lecture by Prof. 李宏毅)](https://kilong31442.medium.com/self-supervised-learning-and-its-applications-to-speech-processing-%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%95%99%E6%8E%88%E7%9F%AD%E8%AC%9B-2452e9749f7f)
+
+##### Videos: [Machine Learning 2023 — Generative AI Series](https://www.youtube.com/playlist?list=PLJV_el3uVTsOePyfmkfivYZ7Rqr2nMk3W)
+##### Videos: Prof. 李宏毅's Series
+- [Machine Learning 2021: Generative Adversarial Networks (GAN), Part I — Basic Concepts](https://www.youtube.com/watch?v=4OWp0wDu6Xw&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=14&pp=iAQB)
+- [Machine Learning 2021: Generative Adversarial Networks (GAN), Part II — Theory and WGAN](https://www.youtube.com/watch?v=jNY1WBb8l4U&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=15&t=1301s&pp=iAQB)
+- [Machine Learning 2021: Self-supervised Learning, Part I — Sesame Street and Attack on Titan](https://www.youtube.com/watch?v=e422eloJ0W4&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=18&pp=iAQB)
+- [Machine Learning 2021: Self-supervised Learning, Part II — An Introduction to BERT](https://www.youtube.com/watch?v=gh0hewYkjgo&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=19&pp=iAQB)
+- [Machine Learning 2021: Autoencoders, Part II — The Bow-tie Voice Converter and More Applications](https://www.youtube.com/watch?v=JZvEzb5PV3U&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=23&pp=iAQB)
+- [Machine Learning 2021: Adversarial Attacks, Part II — Can Neural Networks Escape Humanity's Boundless Malice?](https://www.youtube.com/watch?v=z-Q9ia5H2Ig&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=25&pp=iAQB)
+- [Machine Learning 2021: Explainable ML, Part I — Why Can Neural Networks Correctly Distinguish Pokémon from Digimon?](https://www.youtube.com/watch?v=WQY85vaQfTI&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=26&t=2113s&pp=iAQB)
+- [Machine Learning 2021: Explainable ML, Part II — What Does a Cat Look Like to a Machine?](https://www.youtube.com/watch?v=0ayIPqbdHYQ&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=27&pp=iAQB)
+- [Machine Learning 2021: An Overview of Domain Adaptation](https://www.youtube.com/watch?v=Mnk_oUrgppM&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=28&pp=iAQB)
+- [Machine Learning 2021: An Overview of Reinforcement Learning, Part I — The Same Three Steps as Machine Learning](https://www.youtube.com/watch?v=XWukX-ayIrs&list=PLJV_el3uVTsMhtt7_Y6sgTHGHp1Vb2P2J&index=29&t=1907s&pp=iAQB)
+- [Transformer](https://youtu.be/ugWDIIOHtPA)
+- [ELMO. BERT, GPT](https://youtu.be/UYPa347-DdE) (Reading)
+
+---
+
+### Competitions
+- Best result: First place in the Hahow course prediction competition, the final project for NTU's Applied Deep Learning course.
+- Prize winner (sixth place) in the E.SUN AI Open Challenge 2022 Summer Competition — Speech Recognition Post-correction, with team members Yu-Chen Lin (林育辰) and 梁俊彥.
+    - Competition notes: https://hackmd.io/@mathlin/BJ4J1Nuc5
+    - Reflection article: https://reurl.cc/1mKoOY
+    - GitHub: https://github.com/yuchen0515/2022-Competition-CUDAOutOfMemory
+
+---
+
+### Project
+- Subtitle Generation System (A Subtitles Generator using WeNet Toolkits)
+    - A demonstration system that takes a YouTube URL, extracts the audio, and generates corresponding subtitles.
+    - The project received an A+ in the DSP course. Development has continued, and it is currently one of MIRlab's demonstration projects.
+
+---
+
+### Meeting Slides
+- [[Password](https://nas.mirlab.org/drive/oo/r/s9U2lYWoeAjevdJ39AU3ZZfpob6B0vAJ)] $\implies$ [[Slide Folder](https://nas.mirlab.org/drive/d/s/qXspbwCtOwQ78c9CBC8COW6z1xHSWZtl/dtpqbuxmJi2RzYBV0PRgSguLGDfWCgI6-pLuAYLYQ4Qk)]
+- Note: The password is accessible only to internal users with an account. After retrieving it, open the slide folder and enter the password to view the entire year's presentation slides.
+
+---
+
+### Other Resources
+- Handbooks: [Technical Enablement Team], [Speech Group Handbook]. I created and wrote most of these handbooks. For the links, please message me privately or check the notes in the LINE group.
+
+---
+
+### Coursework
+##### Master's Courses
+- Machine Learning (ML), Prof. 李宏毅
+- Applied Deep Learning (ADL), Prof. 陳縕儂
+- Introduction to Digital Speech Processing (DSP), Prof. 李琳山
+- Natural Language Processing (NLP), Prof. 陳信希
+- Advanced Computer Vision (ACV), Prof. 傅楸善
+- Introduction to Intelligent Vehicles, Prof. 林忠緯
+- Neural Network (NN), Prof. 劉長遠
+- Brain Theory, Prof. 劉長遠
+
+##### Bachelor's Courses
+- Data Mining, Data Visualization, Computer Graphics, Image Processing
+- Artificial Intelligence, Heuristic Algorithms and Problem-solving Applications
+- Local Area Networks, Data Communications
+- Database Theory
+- Biotechnology, Programming Languages for Bioinformatics, Introduction to Bioinformatics
+- Operating Systems, Computer Architecture, Computer-aided VLSI Design, Assembly Language, Digital Logic
+- Programming I and II, Advanced Programming
+- Algorithms, Data Structures
+- Probability Theory, Linear Algebra, Discrete Mathematics, Calculus B I and II
+- ..., 150.0 credits in total
+
+---
+
+### Contact
+- <i class="el-icon-message"></i> /<u><a href="mailto:i98565412@gmail.com">i98565412@gmail.com</a></u>
+- <i class="fa fa-github"></i> /<u>[yuchen0515](https://github.com/yuchen0515)</u>
+- <i class="fa fa-brands fa-linkedin"></i> /<u>[Yu-Chen Lin](https://www.linkedin.com/in/mathlin-owen/)</u>
+<!-- LANG:EN END -->

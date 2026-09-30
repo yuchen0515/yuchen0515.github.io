@@ -458,13 +458,13 @@ Online Judge 簡稱 OJ，由於程式碼解題批閱不易，因此有人想出�
 <!-- LANG:ZH END -->
 
 <!-- LANG:EN START -->
-> This page contains many links that were extremely helpful to me in the past. I hope to compile these links that once helped me to assist more people! Of course, if you have any private collection of related links, please share them with me in the comments :)
+> These are resources that helped me learn, gathered here in the hope that they'll help you too. If you have a favorite resource to add, please share it in the comments :)
 
 ---
 
 ## Large Language Models (LLM)
 
-> First, let me promote my own community ~ Facebook "LLM Free Space", which mainly focuses on sharing LLM-related knowledge, including cool MCP demos, weather interface implementations, technical papers, and more!
+> First, a quick plug for the Facebook group I run, "LLM Free Space"! I share LLM news, interesting MCP demos, weather interface projects, technical papers, and more.
 * [LLM Free Space](https://www.facebook.com/share/g/18Pko9vWrR/)
 
 ## Programming / Algorithms
@@ -472,84 +472,84 @@ Online Judge 簡稱 OJ，由於程式碼解題批閱不易，因此有人想出�
 #### Interactive Learning Websites
 * [Snakify](https://snakify.org/en/) 
   <i class="el-icon-collection-tag"></i>tags: `Python` `JavaScript`
-  > Python & JS basic syntax problems and tutorials. Each basic concept has video and text explanations, very suitable for beginners. This was also the website I used when I first started learning Python~
+  > Beginner-friendly Python and JavaScript exercises and tutorials, with video and written explanations of the basics. This is where I started learning Python!
 * [Kaggle](https://www.kaggle.com/)
   <i class="el-icon-collection-tag"></i>tags: `Python` `ML` `DL` `Competition`
-  > One of the must-know websites for machine learning and data mining engineers! It has detailed tutorials for Python, ML, and DL, with implementations. It provides cloud environments for running on remote hosts without consuming local resources. There are also many competitions like data prediction and recognition, with prizes and interview opportunities.
+  > A useful starting point for machine learning and data mining, with detailed Python, ML, and DL tutorials and practical exercises. Cloud notebooks let you run code without using your own computer's resources. There are also competitions in prediction, recognition, and other areas, some offering prizes or interview opportunities.
 * [W3Schools](https://www.w3schools.com/)
   <i class="el-icon-collection-tag"></i>tags: `Web language` `SQL` `Data Analysis`
-  > Tutorials for various programming languages, data analysis packages, and databases. Starts with basic concept explanations, followed by fill-in-the-blank and interactive exercises.
+  > Tutorials on programming languages, data analysis libraries, and databases. Explanations of the basics are followed by fill-in-the-blank and interactive exercises.
 * [picoCTF](https://picoctf.org/)
   <i class="el-icon-collection-tag"></i>tags: `CTF`
-  > CTF (Capture The Flag) competitions, also known as cybersecurity competitions. This website is provided by the US for high school students to practice CTF in RPG style, very easy to get started, worth trying!
+  > A U.S.-based site for high school students to practice Capture the Flag (CTF) cybersecurity challenges. Its RPG-style approach makes it easy to get started—give it a try!
 * [R Programming Flipped Classroom](https://datascienceandr.org/)
   <i class="el-icon-collection-tag"></i>tags: `R`
-  > A website built by NTU Professor Wush Wu, aiming to use the teaching system simultaneously within the R compiler. Both learning and practice are done locally. I've used it in classes before, with difficulty progressing from shallow to deep, very suitable for learning.
+  > Created by NTU's Wush Wu, this resource lets you learn and practice directly in a local R environment. I used it in class and liked how the exercises build gradually from the basics.
 * [HackerRank](https://www.hackerrank.com)
   <i class="el-icon-collection-tag"></i>tags: `Algorithm` `Data Structure` `AI` `Programming Language`
-  > Thematic online judge system including algorithms, data structures, AI, and different languages. My personal impression is it's quite like Leetcode, and you can compete for rankings too.
+  > An online judge with exercises organized by topic, including algorithms, data structures, AI, and programming languages. It feels similar to LeetCode to me, with rankings to compete for too.
 * [CodinGame](https://www.codingame.com/start)
   <i class="el-icon-collection-tag"></i>tags: `Game` `ML` `Programming Language`
-  > The platform has many different games, each controlled by programs. You control your character to compete with other players, with different stages: Wood 3, 2, 1, Bronze, Silver, Gold, and Legend. You can advance to the next stage only after becoming first in your current stage and defeating the Boss. There are special games each season, very fun! You can try this way of learning programming through games~
+  > Write code to control your character and compete against other players. The leagues progress through Wood 3, 2, 1, Bronze, Silver, Gold, and Legend; reaching the top of a league and defeating its boss lets you advance. Seasonal games add variety. It's a fun way to learn by programming games!
 
 
 #### Tutorial Websites
 * [Node.js Introduction](https://www.nodebeginner.org/index-zh-tw.html#execution-in-the-kongdom-of-verbs)
   <i class="el-icon-collection-tag"></i>tags: `Node.js`
-  > Learn Node.js in a practical way. After following the article for learning and practice, you can build a practically applicable website. It's a very detailed website with clear concepts, highly recommended!
+  > A practical introduction to Node.js that walks you through building a working website. The explanations are detailed and clear—I highly recommend it!
 * [Algorithm Notes](https://web.ntnu.edu.tw/~algo/) 
   <i class="el-icon-collection-tag"></i>tags: `Algorithm` `Data Structure`
-  > Written by NTNU Computer Science seniors, explaining various algorithms and data structures. The content is quite clear and easy to understand, perfect for refreshing your past knowledge~
+  > Notes by NTNU Computer Science students explaining algorithms and data structures. Clear explanations make this a good place to refresh what you've learned.
 * [C Programming](https://sites.google.com/gapps.ntnu.edu.tw/neokent/teaching)
   <i class="el-icon-collection-tag"></i>tags: `C` `Information Security` `Software Engineering` `Computer Networks`
-  > Teaching website by NTNU Computer Science Professor Chi Po-Wen. Courses include C, information security, software engineering, etc. All course materials are public, including handouts, teaching videos, and exams, very suitable for beginners who want to solidly build programming fundamentals.
+  > NTNU Computer Science Professor Chi Po-Wen's teaching site, covering C, information security, software engineering, and more. Public materials include handouts, lecture videos, and exams—a useful resource for building solid programming fundamentals.
 * [Python-100 Days from Beginner to Master (Github)](https://github.com/john970473/Python-100-Days-zh_TW) 
   <i class="el-icon-collection-tag"></i>tags: `Python`
-  > 100-day notes organized by progress and topics, with detailed notes and practical program files~
+  > A 100-day learning plan organized by topic, with detailed notes and code to practice with.
 * [freeCodeCamp](https://www.freecodecamp.org/learn/)
   <i class="el-icon-collection-tag"></i>tags: `Software developer Course`
-  > Provides many free and complete courses, each series is 300 hours, including data analysis, information security, machine learning, and web applications. You can get certificates after completing courses~
+  > Free, structured courses covering data analysis, information security, machine learning, web applications, and more. The 300-hour course series include certificates on completion.
 * [Physcal's Grand Grimoire](https://www.cnblogs.com/neopenx/category/745755.html?fbclid=IwAR2l82aqv62LeVE-LFlQhO-UXIq291-FTrJi1MBtHiVN1vtJn-qyBKTICvA)
   <i class="el-icon-collection-tag"></i>tags: `OJ Solution`
-  > Master's Online Judge solution blog, analyzes problems and explains how to solve them~
+  > An experienced programmer's online judge solution blog, with problem analysis and explanations of how to approach each solution.
 * [Morris' Blog](http://morris821028.github.io/?fbclid=IwAR08FglwbMlpb0OjQFg4lPEhD_jHjOCIRJRF-yai8Y0SpcqUGXcpSsQiGPQ)
   <i class="el-icon-collection-tag"></i>tags: `blog`
-  > Master's blog, publishing CS-related websites including problem solving, web design, and work applications. Very worth visiting.
+  > A blog by an experienced programmer, covering problem solving, web design, and practical software applications. Well worth a visit.
 * [Huli Medium](https://hulitw.medium.com/)
   <i class="el-icon-collection-tag"></i>tags: `blog`
-  > All articles are high quality! Many career advice and thoughtful articles about the software industry, technical articles. When explaining concepts, it's easy to understand. Reading his articles is truly a pleasure, highly recommended!
-* [AP325─From APCS Implementation Level 3 to Level 5](https://gappsntnuedutw-my.sharepoint.com/:b:/g/personal/40771131h_gapps_ntnu_edu_tw/EdrayDA3zaJLv-bRY8BDWfgBxHXydRTByXOwDHFxI-tadA?e=e9MFK1)
+  > Technical articles alongside career advice and reflections on the software industry. Huli explains concepts clearly, and I always enjoy reading his work.
+* [AP325─From APCS Implementation Level 3 to Level 5](https://gappsntnuedutw-my.sharepoint.com/:b:/g/personal/40771131h_gapps_ntnu_edu_tw/EdrayDA3zaJLv-bRY8BDWfgBxHXydRTByXOwDHFxI7tadA?e=e9MFK1)
   <i class="el-icon-collection-tag"></i>tags: `APCS` `Algorithm`
-  > A book written by Chung Cheng University Computer Science Professor Wu Bang-Yi for APCS, designed for students above implementation level 3 to strengthen concepts. The book is written from shallow to deep and includes detailed APCS problem explanations, quite suitable for beginners~
+  > An APCS book by Chung Cheng University Computer Science Professor Wu Bang-Yi, aimed at students at practical level 3 or above. It builds concepts gradually and includes detailed problem solutions, so beginners can also find it useful.
 
 #### Resource Compilation Websites
 * [Programming Contest Online Resources Collection](https://hackmd.io/@cube/rJ3o-G1mF)
   <i class="el-icon-collection-tag"></i>tags: `Algorithm` `Programming Contest`
-  > A compilation of notes by kind-hearted people about learning resources related to programming contests~
+  > A community-compiled collection of learning resources for programming contests.
 * [Information Training Related Resources Collection](https://github.com/goodjack/awesome-cs-training?fbclid=IwAR0b-SGdj6Ercg4LiyVFH1QDeOKMMYThoerRe8LrOMjpVb3MyL0RmqU9TYE)
   <i class="el-icon-collection-tag"></i>tags: `Algorithm` `Programming Contest` `High School`
-  > Learning resources related to information training compiled from the perspective of Taiwanese high school students~
+  > Computer science training resources compiled from the perspective of Taiwanese high school students.
 * [NTU CSIE Sprout Algorithm Class](https://www.csie.ntu.edu.tw/~sprout/algo2019/)
   <i class="el-icon-collection-tag"></i>tags: `Algorithm` `Programming Contest` `Programming Language`
-  > NTU Computer Science Department regularly holds "Sprout" camps teaching algorithms and programming. All course materials are publicly available, with content that's easy to understand and suitable for algorithm beginners~
+  > NTU's Computer Science department runs "Sprout" classes on algorithms and programming. The public course materials are clear and accessible for beginners.
 * [Free-programming-books](https://github.com/EbookFoundation/free-programming-books)
   <i class="el-icon-collection-tag"></i>tags: `Algorithm` `Programming Language` `CS Basic Concept`
-  > Compilation of programming-related learning resources, including videos, course websites, etc.
+  > A collection of programming resources, including videos and course websites.
 
 #### Leetcode Resources
 * [wisdompeak Leetcode Collection](https://github.com/wisdompeak/LeetCode)
-  > Leetcode problems categorized and marked by difficulty by someone called "Official God"
+  > LeetCode problems organized by topic and difficulty by wisdompeak, also known as "官神" in the community.
 * [代碼隨想錄](https://programmercarl.com/) ([GitHub](https://github.com/youngyangyang04/leetcode-master))
-  > Website mainly focuses on algorithm interview questions for "software engineers" job hunting, but it's a very effective way to build algorithmic thinking through steps and practice :P
+  > Focused on algorithm questions for software engineering interviews, with a structured approach that also helps build algorithmic thinking through practice :P
 * [Leetcode Contest Rating Prediction](https://lccn.lbao.site/)
-  > Predicts your expected elo score after participating in Leetcode Contest. Usually quite accurate, I feel it estimates from a more "pessimistic" perspective
+  > Predicts your rating after a LeetCode contest. I've found it fairly accurate, though the estimates tend to be a little conservative.
 * [Grind 75](https://www.techinterviewhandbook.org/grind75)
-  > A website that helps you plan your Leetcode practice schedule
+  > A tool for planning your LeetCode practice schedule.
 
 #### Articles
 * [What Are We Really Learning When We Learn Programming?](https://hulitw.medium.com/learn-coding-9c572c2fb2)
 * [How to Self-Learn Programming](https://medium.com/the-z-institute/%E5%A6%82%E4%BD%95%E8%87%AA%E5%AD%B8%E5%AF%AB%E7%A8%8B%E5%BC%8F-%E5%BF%83%E6%B3%95%E6%98%AF%E6%88%90%E5%8A%9F%E9%97%9C%E9%8D%B5-36e95f887542)
-  > This article is highly recommended. The author is a top student and blockchain co-founder. This article explains from his perspective "Why learn programming?", "Why like it?" and "How to learn". For students who feel confused about programming, it's worth reading - it might help you see through your confusion. I was deeply touched after reading it.
+  > A strong student and blockchain co-founder shares why he learns programming, what he enjoys about it, and how he approaches learning. If you're unsure about your direction, this may help you find some clarity. It resonated with me when I read it.
 
 
 
@@ -558,44 +558,44 @@ Online Judge 簡稱 OJ，由於程式碼解題批閱不易，因此有人想出�
 ## Graduate Students Section
 
 * [Read This Paper](https://maintain.readthispaper.com/)
-  > This website allows you to input the paper you want to read, and it uses knowledge graphs and other techniques to find the optimal reading path. Each paper may require certain foundational knowledge to understand, and it can infer the best reading route through the interrelationships of cited paper data. This tool is very useful!
+  > Enter a paper you want to read, and the site uses knowledge graphs and citation relationships to suggest a reading order. It helps you work through the background knowledge you may need before tackling the paper.
 * [Consensus](https://consensus.app/search/)
 * [SCISPACE](https://scispace.com/)
 * [ChatDOC](https://chatdoc.com/)
 
 ## LaTeX
 
-$\LaTeX$ is a typesetting language. Simply put, it enables users without typesetting or programming experience to produce beautiful and high-quality publications within days or hours, especially useful for technology and engineering fields. Most Markdown now supports basic LaTeX syntax for generating mathematical expressions, and many graduate students use LaTeX to write complete theses. It allows us to focus on content creation without being bothered by formatting - it's amazing!
+$\LaTeX$ is a typesetting system that helps you create polished documents, especially in science and engineering. You can get started without previous typesetting or programming experience. Many Markdown tools support LaTeX-style math through MathJax, and many graduate students use LaTeX for their theses. I like being able to focus on the content rather than the formatting.
 
 
 * [LaTeX Syntax Tutorial-HackMD](https://hackmd.io/RWZCloBFR96o3vQbGuOFzg)
-* [LaTeX Basic Tutorial](https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference)
+* [MathJax Basic Tutorial and Quick Reference](https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference)
 * [LaTeX Wikibooks](https://zh.wikibooks.org/zh-tw/LaTeX/%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F)
 * [LaTeX (Simplified Chinese Tutorial)](http://mohu.org/info/symbols/symbols.htm)
 * [Web: Overleaf](https://overleaf.com/)
-  > A collaborative LaTeX platform that saved me countless course written reports!
+  > A collaborative LaTeX platform that has helped me through countless course reports!
 
 
 ---
 
 
 ## Markdown
-Markdown is a "lightweight markup language" - this may sound confusing. Now [GitHub](https://github.com/), [Notion](https://www.notion.so/), [HackMD](https://hackmd.io/) all support it. We can simply memorize a few symbols to create bold text, headings, etc., and quickly produce clean and beautiful documents. Therefore, it's especially popular in technology-related industries now. Some Markdown even supports HTML, enabling more exciting possibilities!
+Markdown is a "lightweight markup language": a few simple symbols let you add headings, bold text, and other formatting to plain text. It's supported by [GitHub](https://github.com/), [Notion](https://www.notion.so/), and [HackMD](https://hackmd.io/), among others. It's a quick way to create clear, readable documents, and some Markdown tools also support HTML for more flexibility.
 
 * [Tutorial](https://commonmark.org/help/tutorial/)
-  > Markdown syntax tutorial that combines concepts with practical operations - I think it's the fastest way to learn MD.
+  > An interactive Markdown tutorial that combines explanations with practice. I think it's one of the quickest ways to learn.
 * [Tutorial Article](https://ed521.github.io/2019/08/hexo-markdown/)
 * [Markdown Style─Git Tutorial](https://kingofamani.gitbooks.io/git-teach/content/chapter_6_gitbook/markdown.html)
-  > Besides Markdown, it also has Git tutorials. I think it's more of a bullet-point style, more suitable for people who have learned it before but forgot and want to restore their memory.
+  > Covers Git as well as Markdown. Its concise notes are useful when you've learned the basics and need a refresher.
 * [Web: HackMD](https://hackmd.io/)
-  > The smoothest online collaborative platform for Markdown currently available, developed by Taiwanese. Highly recommended - all my classmates from university to now are using it!
+  > A Markdown collaboration platform developed in Taiwan. It's the smoothest one I've used, and it has been a favorite among my classmates since university.
 
 
 ---
 
 
 ## Git
-Git is simply the "time machine" for files. It's a distributed version control system, meaning version records can exist on multiple different hosts, rather than being centralized. It's different from GitHub - GitHub is a code hosting service platform that uses Git as its version control system. Git is now commonly seen everywhere, allowing development of different features at different points and then integrating them, even with automatic testing. It's extremely useful for software product development and is an essential skill for IT professionals!
+Think of Git as a "time machine" for files. It tracks changes, and its distributed design lets each computer keep a copy of the repository's history. GitHub is a service for hosting Git repositories. With Git, you can develop features on separate branches and merge them later; it also fits into workflows with automated testing. It's an essential tool for software development.
 
 
 * [Learn Git Branching](https://learngitbranching.js.org/?locale=zh_TW) $\leftarrow$ Highly recommended ([Source](https://www.google.com/url?sa=i&url=https%3A%2F%2Flearngitbranching.js.org%2F&psig=AOvVaw2DSjGrpnT-w9Kvw_z-m-20&ust=1683918549551000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCMiK78n77f4CFQAAAAAdAAAAABAE))
@@ -608,9 +608,9 @@ Git is simply the "time machine" for files. It's a distributed version control s
 * [Git Tutorial + Gif Operation Animations](https://www.slideshare.net/LeonLin9/git-gif)
 * [Git ShareSlide Branch Tutorial](https://www.slideshare.net/cha122977/git-rebase-i)
 * [GitKraken](https://www.gitkraken.com/git-client)
-  > Git visualization tool that visualizes commit status after importing git-related files. It's quite nice and also provides an editor. May require payment for excessive use.
+  > A visual Git tool that displays a repository's commit history and includes an editor. I like its interface; some features may require a paid plan.
 * [Master Git Version Control in 30 Days](https://ithelp.ithome.com.tw/users/20004901/ironman/525)
-  > This is a 30-day series from IT Help Iron Man Contest. The concepts are clear and well-written, making it a popular article on the platform. Whether learning or reviewing to strengthen concepts, I think this series is worth reading.
+  > A popular 30-day series from the iT Help Iron Man Contest, with clear explanations of Git. I recommend it for both learning and reviewing the concepts.
 
 
 ---
@@ -618,15 +618,15 @@ Git is simply the "time machine" for files. It's a distributed version control s
 ## APP Developer
 
 * [Android for Developers](https://developer.android.com/)
-  > A series of Android development courses designed by Google
+  > A series of Android development courses from Google.
 
 ---
 
 ## Unity
-A powerful tool for game development!!!
+A powerful tool for game development!
 
 * [Unity Learn](https://learn.unity.com/)
-  > Unity itself is a game engine, so this website has many enthusiastic people who are "goal-oriented". You can choose the theme and type you want to make, select a tutorial, and it will arrange a schedule for you to learn key concepts. After learning, you'll be able to complete a game.
+  > Unity's learning site offers tutorials organized around what you want to build. Pick a game type or topic and follow a learning path through the key concepts to a finished game.
 * [Unity for Beginners](https://www.raywenderlich.com/gametech) (raywenderlich)
 * [Unity for beginners](https://unity.com/learn/get-started)
 * [Unity Tutorial](http://www.cg.com.tw/Unity/)
@@ -637,43 +637,43 @@ A powerful tool for game development!!!
 ---
 
 ## Online Judge
-Online Judge, abbreviated as OJ, is difficult to grade code solutions, so someone came up with a method: unify the input and output formats, each problem has several test data sets, just execute the program one by one and compare the correct answers with the test data to verify whether the code is correct to some extent. Therefore, OJ is often used for assigning homework, programming practice, etc., and results can be obtained in a very short time. However, the disadvantage is that following the format is quite troublesome and somewhat unfriendly to beginners.
+An online judge (OJ) checks code against test cases. Each problem specifies an input and output format; the judge runs your program and compares its output with the expected answers. This gives quick feedback for assignments and programming practice, though strict formatting can be frustrating when you're starting out.
 
 
 * [Virtual Judge](https://vjudge.net/)
-  > This is a website that one of our department's teachers loves to use. We can select problems from different platforms on this website, and can also create competitions and problem lists for practice and simulation of formal competitions. The only downside is that the platform sometimes crashes, mainly because there are quite a few users.
+  > A favorite of one of our department's teachers. It brings together problems from different platforms and lets you create contests and practice sets. It's useful for simulating a competition, though it can occasionally become unstable when busy.
 * [LeetCode](https://leetcode.com/)
-  > The tradition when job hunting is: "Have you done LC?" LeetCode has many classic whiteboard problems from interviews. You can accumulate practice here before job hunting - maybe they'll ask exactly those questions during interviews!!
+  > "Have you practiced LeetCode?" is a familiar question when preparing for engineering interviews. It has many classic interview problems, making it a useful place to practice before applying for jobs.
 * [Coderbyte](https://www.coderbyte.com/)
-  > Website similar to LeetCode. If you're a master who finished LeetCode, you can come here to keep your skills sharp~
+  > Similar to LeetCode—another place to practice when you want more problems to keep your skills sharp.
 * [Programming Contest Diary](https://oj.icpc.tw/?next=http%3A%2F%2Foj.icpc.tw%2Fproblem_archive)
-  > Student-initiated OJ, and it's a rare Chinese resource with problems suitable for beginners~
+  > A student-run online judge with Chinese-language problems suitable for beginners.
 * [High School Programming Problem Solving System](https://zerojudge.tw/)
-  > Also a rare Chinese OJ with many basic problems, but also has challenging ones. Many beginners start practicing here~
+  > A Chinese-language online judge with plenty of basic exercises and harder problems too. Many beginners start practicing here.
 * [Codeforces](https://codeforces.com/?f0a28=1)
-  > Russian OJ with stable system and clean interface. Has competitions and ranking system, great for competition practice~
+  > An online judge from Russia with a clean interface, contests, and a rating system. A good place to practice competitive programming.
 * [UVa Online Judge](https://onlinejudge.org/index.php?option=com_frontpage&Itemid=1)
-  > Famous problem website. The Collegiate Programming Examination (CPE) selects problems from this website's problem bank. The biggest drawback is the slow system. It's recommended to practice UVa problems on Virtual Judge for convenience.
+  > A well-known problem archive used as a question bank for the Collegiate Programming Examination (CPE). I've found the site slow, so practicing its problems through Virtual Judge can be more convenient.
 * [Lucky Cat's UVA Garden](http://web.kshs.kh.edu.tw/academy/luckycat/index.htm)
-  > If you choose to practice UVa problems, you'll definitely love this website. It translates many UVa problems~
+  > A helpful companion for practicing UVa problems, with many problem statements translated into Chinese.
 * [Google Code Jam](https://codingcompetitions.withgoogle.com/codejam/archive)
-  > As a semi-professional, this is a competition I really like. It's hosted by Google with several stages, and the key point is the problem quality is excellent. If you have certain confidence in programming, I highly recommend trying this.
+  > One of my favorite competitions as I moved from university into working life. Google's multi-stage contest had excellent problems. If you're comfortable with programming, I recommend trying the archived problems.
 
 ---
 
 ## Vim
-If [Emacs](https://zh.wikipedia.org/zh-tw/Emacs) is the editor of God, then Vim is the God of editors. It has the reputation of "what the eyes see, the hands reach," but many people are deterred by its steep learning curve, as shown in the figure below:
+There's a joke that [Emacs](https://zh.wikipedia.org/zh-tw/Emacs) is God's editor and Vim is the god of editors. Vim's keyboard commands make editing fast once you're familiar with them, but its steep learning curve can be intimidating, as the figure below shows:
 ![image_2023-02-12-02-20-04](images/image_2023-02-12-02-20-04.png)
-([Source](https://www.google.com/url?sa=i&url=https%3A%2F%2Fegel.github.io%2F2015%2F04%2F06%2Fis-worth-to-know-the-vim-editor-and-why.html&psig=AOvVaw010-rsYPtFfkNxyktjGZI3&ust=1676225974211000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCLjJhMCKjv0CFQAAAAAdAAAAABAI))
+([Source](https://www.google.com/url?sa=i&url=https%3A%2F%2Fegel.github.io%2F2015%2F04%2F06%2Fis-worth-to-know-the-vim-editor-and-why.html&psig=AOvVaw010-rsYPtFfkNxyktjGZI3&ust=1676225974211000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCLjJhMCKjv0CFQAAAAAdAAAAABAI))
 
-Because it requires memorizing quite a lot of key combinations in the beginner stage. However, its theory is to allow you to focus on the keyboard typing area without using the mouse, thereby achieving very high editing efficiency. Therefore, this ancient tool is still invincible today. As long as you learn step by step, you can reach the speed of "notepad" in an hour or two, and after becoming familiar with it for a day or two, you can be slightly faster than IDE (without additional plugins). It's a tool that gets deeper the more you learn.
+There are quite a few commands to learn at first. The idea is to keep your hands on the keyboard instead of reaching for the mouse, which helps explain why this long-established editor is still popular. In my experience, learning step by step can get you editing at Notepad speed in an hour or two; after another day or two of practice, you may be faster than in an IDE without extra plugins. There's always more to learn.
 
-> 2023.05.12 Update: Recently obsessed with neovim, it feels like switching from Windows to Linux (?)! The biggest difference I feel is in plugin usability, appearance, functionality, and convenience. Also, the loading speed is much faster, and there's much more flexibility. The more I use it, the better it gets (promoting it)
+> 2023.05.12 Update: I've been getting into Neovim lately—it feels a bit like switching from Windows to Linux (?)! I find its plugins easier to use, with a nicer interface and a more convenient workflow. It also loads much faster and gives me more flexibility. The more I use it, the more I like it!
 
 
 ### How to exit the Vim editor? (XD)
 * [Vim](https://zhuanlan.zhihu.com/p/68111471)
-  > Very detailed Vim tutorial article titled "Master Vim, This Article Is Enough," though actually you still have plugins and other content to research and explore XD
+  > A detailed tutorial titled "Master Vim, This Article Is Enough"—though there's still a whole world of plugins and other features to explore XD
 * [Vim Game-based Tutorial](https://vim-adventures.com/)
 * [VimGenius](http://www.vimgenius.com/)
 * [Interactive Vim](https://www.openvim.com/)
@@ -686,7 +686,7 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 ### Youtube Tutorials
 * [Vim Tutorial / YouTuber: ThePrimeagen](https://www.youtube.com/watch?v=X6AR2RMB5tE&list=PLm323Lc7iSW_wuxqmKx_xxNtJC_hJbQ7R&ab_channel=ThePrimeagen)
-    > A tutorial I personally love, clear and amusing explanations, teaches essential skills you'll actually use most often. Highly recommended!
+    > One of my favorite tutorials: clear, funny, and focused on practical skills you'll use often. Highly recommended!
 * [Vim Tutorial](https://www.youtube.com/watch?v=IiwGbcd8S7I)  (time: `1 hour`)
 * [How to use vim](https://www.youtube.com/watch?v=g-XsXEsd6xA) (time: `8 mins`)
 * [Vim Basics in 8 Minutes](https://www.youtube.com/watch?v=ggSyF1SVFr4)
@@ -695,7 +695,7 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 ### Extensions
 * cVim([Command Tutorial List](https://ppundsh.github.io/posts/78d/), [Introduction](https://www.playpcesor.com/2016/05/cvim-chrome.html))
-  > A tool that lets you control browsers with Vim-style commands. Currently cvim is broken, but because it was useful, someone forked it as "vb4c" to continue maintenance~
+  > A tool for controlling your browser with Vim-style commands. cVim had stopped working when I wrote this, but a fork called "vb4c" continued its development.
 * [Markdown plugin for vim](https://fokayx.com/2018/01/21/markdown-extension-on-vim.html)
 * [Efficient Note-taking: vim + markdown](https://zhuanlan.zhihu.com/p/84773275)
 * [21 Best Vim Plugins](https://www.dunebook.com/best-vim-plugins/)
@@ -713,7 +713,7 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 ## Large Language Models (LLMs)
 * [Professor Hung-yi Lee - Machine Learning](https://speech.ee.ntu.edu.tw/~hylee/ml/2025-spring.php)
-    - Videos focus on the **latest** LLM developments, explained in an extremely easy-to-understand way. The assignments are carefully designed, like Hw2, which I remember had you write an LLM Agent that could continuously self-correct and generate code applicable to your given machine learning tasks based on task descriptions, datasets, etc. This is almost at the level of a side project, and there's much more to discover!
+    - Clear explanations of the **latest** LLM developments covered in the course, with thoughtfully designed assignments. As I recall, Hw2 asked you to build an LLM agent that generates and iteratively corrects code for a machine learning task, using its description and dataset. That's substantial enough to be a side project, and there's plenty more to explore!
 * [Professor Hung-yi Lee - Introduction to Generative AI Spring Class](https://speech.ee.ntu.edu.tw/~hylee/genai/2024-spring.php)
 * [The Rise and Potential of Large Language Model Based Agents: A Survey](https://github.com/WooooDyy/LLM-Agent-Paper-List)
 * [Prompt Engineering Guide](https://www.promptingguide.ai/zh)
@@ -722,9 +722,9 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 ## Speech Processing
 * [2023 - Speech Foundation Models](https://speech.ee.ntu.edu.tw/~hylee/ml/ml2023-course-data/%E5%BC%B5%E5%87%B1%E7%88%B2-x-%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92-x-%E8%AA%9E%E9%9F%B3%E5%9F%BA%E7%9F%B3%E6%A8%A1%E5%9E%8B.pdf) by Machine Learning TA Chang Kai-Wei
-  > Very thoughtful and excellent slides. The TA himself is extremely capable - calling him an "outstanding scholar" wouldn't be an exaggeration. For recordings, refer to the [2023 Machine Learning](https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php) website :)
+  > Carefully prepared slides by a very capable teaching assistant. For the recordings, see the [2023 Machine Learning](https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php) course website :)
 * [2022 - DSP Professor Lin-shan Lee](https://speech.ee.ntu.edu.tw/DSP2022Autumn/)
-  > Professor Lee is a master in the speech field. His lectures are clear and wise, and course assignments are quite interesting, such as: pronunciation classification, Chinese number pronunciation classification, phonetic sentence correction (e.g. ㄓ教作業ㄏ難 --> 助教作業好難). It's an excellent introductory course for speech.
+  > Professor Lee brings extensive expertise in speech processing and explains it clearly. Assignments include pronunciation classification, spoken Chinese digit classification, and correcting sentences with phonetic symbols (e.g. ㄓ教作業ㄏ難 --> 助教作業好難). It's an excellent introduction to speech processing.
 * [DSP Digital Speech Processing Introduction - Professor Lin-shan Lee OCW Online Course](http://ocw.aca.ntu.edu.tw/ntu-ocw/ocw/cou/104S204)
 * [Audio Signal Processing and Recognition - Roger](http://mirlab.org/jang/books/audioSignalProcessing/)
 * [Columbia University - Speech Recognition (EECS E6870)](https://www.ee.columbia.edu/~stanchen/fall12/e6870/outline.html)
@@ -736,22 +736,22 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 ## Artificial Intelligence (AI)
 #### Convolutional Neural Networks (CNN)
 * [CS231n](http://cs231n.stanford.edu/)
-  > Stanford University's open course, solid curriculum that many companies use as interview questions.
+  > A solid open course from Stanford, covering concepts that also come up in technical interviews.
 
 
 #### Machine Learning (ML)
-> Note: Professor Lee's courses mainly lean towards Deep Learning, while Professor Hsuan-Tien's courses are "true" ML. The core difference is whether Neural Networks (NN) are used - choose according to your needs. Professor Lee uses more everyday or student-relatable things in his teaching, like Pokémon, or anime characters when discussing image generation. Each year's course keeps up with current events - for example, 2023 courses extensively introduced the concepts and principles behind ChatGPT.
+> Note: Professor Hung-yi Lee's courses focus more on deep learning and neural networks, while Professor Hsuan-Tien Lin covers machine learning foundations and techniques. Choose according to what you want to learn. Professor Lee uses relatable examples, including Pokémon and anime characters, to explain concepts such as image generation. His courses also follow developments in the field; the 2023 course explored the ideas behind ChatGPT in depth.
 
 * [2023-ML-NTU Professor Hung-yi Lee (Generative Model Series)](https://speech.ee.ntu.edu.tw/~hylee/ml/2023-spring.php)
 * [2021-ML-NTU Professor Hung-yi Lee](https://speech.ee.ntu.edu.tw/~hylee/ml/2021-spring.php)
 * [2020-ML─NTU Professor Hung-yi Lee](http://speech.ee.ntu.edu.tw/~tlkagk/courses_ML20.html)([original web url](http://speech.ee.ntu.edu.tw/~tlkagk/courses.html))
-  > NTU Professor aka Pokémon Master, teaches in an easy-to-understand way from a practical life perspective. The course has always been very popular, with enrollment repeatedly breaking NTU's course selection system limits.
+  > NTU's "Pokémon Master" explains concepts through practical, everyday examples. The course is very popular, with enrollment repeatedly exceeding NTU's course registration limits.
 * [Machine Learning Foundations and Techniques─NTU Professor Hsuan-Tien Lin](https://www.youtube.com/playlist?list=PLXVfgk9fNX2I7tB6oIINGBmW50rrmFTqf)([Study Notes 1](https://www.ycc.idv.tw/ml-course-techniques_1.html), [First Lecture Notes](https://blog.fukuball.com/machine-learning-foundations-by-lin-xuan-tian-di-jiang-xue-xi-bi-ji/), [Lectures 1~7 Brief Notes](https://azole.medium.com/%E6%A9%9F%E5%99%A8%E5%AD%B8%E7%BF%92%E5%9F%BA%E7%9F%B3%E7%AD%86%E8%A8%98-l1-7-8f0431236820))
 * [Rules of Machine Learning Traditional Chinese Version (1) Before Machine Learning](https://data.leafwind.tw/rules-of-machine-learning-traditional-chinese-da0afe0991d6)
 
 #### Deep Learning (DL)
 * [2019-ADL-NTU Professor Yun-Nung Chen](https://www.csie.ntu.edu.tw/~miulab/s108-adl/syllabus)
-  > The professor specializes in Natural Language Processing (NLP), so the course focuses on NLP-related DL, including assignments (intent classification, question answering retrieval, and article summarization) all centered around NLP.
+  > Professor Chen specializes in natural language processing (NLP), so the course focuses on deep learning for NLP. Assignments include intent classification, question answering and retrieval, and text summarization.
 
 ---
 
@@ -823,9 +823,9 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 #### Competitions
 * [T-Brain AI Arena](https://tbrain.trendmicro.com.tw/)
-  > AI-related competitions hosted by Trend Micro. Most competitions here have prizes and certificates, covering different fields from natural language processing, speech to image.
+  > AI competitions hosted by Trend Micro, covering natural language processing, speech, and image processing. Most offer prizes and certificates.
 * [AIdea AI Co-creation Platform](https://aidea-web.tw/)
-  > Competition website managed by Industrial Technology Research Institute. Has many AI-related topics to try, with many more problems than TBrain, but doesn't necessarily have prizes. Quite suitable as a practice ground!
+  > A competition platform run by the Industrial Technology Research Institute, with a wide range of AI tasks to try. I've found more tasks here than on T-Brain, though prizes aren't always offered. A good place to practice!
 
 
 #### Certifications
@@ -859,23 +859,23 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 ###### Input Methods / Tutorial
 * [FISH UP Array Code Lookup](https://array30.misterfishup.com/dictionary.html?fbclid=IwAR2er7Q1RYKPAYIa3YNCkfcXugxtM89M-PRBuBvRGWfe3rQ4uGt5ziAjMvY)
-  > Array input method learning website with learning, code lookup, and typing practice. Array input method has always had few resources, this is a website written by enthusiasts in recent years. Quite recommended if you don't want to memorize radical positions but want to learn a character-decomposition input method.
+  > A site for learning the Array input method, with code lookup and typing practice. Resources for Array can be hard to find, so this community-built site is helpful if you want a Chinese input method based on character components without memorizing radical positions.
 
 
 ###### Online Environments
 * [Repl.it](https://replit.com)
-  > Online platform providing ubuntu shell interface operations, so you can write programs and connect to github. This was my favorite platform in the past~
+  > An online development platform with an Ubuntu shell for writing code and connecting to GitHub. It used to be one of my favorites!
 * [HEROKU](https://www.heroku.com/)
 
 ###### Small Tools
 * [ReadThisPaper](https://readthispaper.com/)
-  > A "paper" tool developed by Chung Cheng University Computer Science graduate students. Based on your queried paper, it helps recommend suggested paper reading sequences from shallow to deep. For detailed introduction, see the author's [explanation article](https://www.dcard.tw/f/graduate_school/p/239055207)
+  > A paper-reading tool developed by Computer Science graduate students at Chung Cheng University. Given a paper, it recommends a reading order from background material to more advanced work. See the author's [introduction](https://www.dcard.tw/f/graduate_school/p/239055207) for details.
 * [HTML to PDF Tool](https://www.ilovepdf.com/zh-tw/html-to-pdf)
 * [Witeboard](https://witeboard.com/43382980-ce37-11ec-9ba2-c124c3f75d20)
-  > A discussion tool for the pandemic era! Online shared whiteboard, similar to Jamboard but much better XD
+  > An online shared whiteboard that was useful for remote discussions during the pandemic. Similar to Jamboard, but I found it much easier to use XD
 * [QRCode Generator](https://www.the-qrcode-generator.com://www.the-qrcode-generator.com/)
 * [ezgif](https://ezgif.com/video-to-gif)
-  > Platform providing various video processing functions, with excellent operations and smoothness.
+  > A collection of video processing tools with a smooth, straightforward interface.
 
 
 #### Article Aggregation Websites
@@ -890,19 +890,19 @@ Because it requires memorizing quite a lot of key combinations in the beginner s
 
 ###### Articles
 * [Learn Git for Yourself](https://gitbook.tw/chapters/introduction/about-this-book)
-  > Website built by author Will Kuo. Besides concept teaching, it also has practice areas for actual operation practice.
+  > Will Kuo's site explains Git concepts and includes exercises for hands-on practice.
 * Jeff Hu ([Medium](https://medium.com/@jj1385jeff850527))
-  > Master's Medium, mostly sharing blockchain content, but also has preparation processes like GRE 329.
+  > Jeff writes mainly about blockchain, but also shares experiences such as preparing for a GRE score of 329.
 * Tina ([Medium](https://tina26919742.medium.com/))
-  > Another genius's Medium. I personally love her writing style, very detailed and clear in both teaching and personal journey sharing. The author's quality has always been excellent, I love reading her articles. ([github](https://github.com/tina1998612))
+  > I enjoy Tina's writing: both her tutorials and accounts of her learning journey are detailed and clear. Her articles are consistently a pleasure to read. ([github](https://github.com/tina1998612))
 * [1700-Page Math Notes Went Viral! Full Code Writing](https://kknews.cc/zh-hk/education/rjmq5zn.amp):
-  > A math student used LaTeX and Vim to the extreme, able to take notes synchronously during class, balancing speed and beauty. This article records how he configured Vim to reach "godly level."
+  > A mathematics student uses LaTeX and Vim to take polished notes in real time during lectures. This article explains how he configured Vim to balance speed and presentation.
 * [Every Experience Has Value——Why Beginners Should Write Experience Notes](https://medium.com/hulis-blog/why-blogging-ab77fd8c6ffa)
-  > Huli's articles are very easy to understand and highly recommended. This one mainly encourages you to write experience notes diligently for endless benefits XD
+  > Another clear, approachable article from Huli, encouraging beginners to write about what they learn and reflect on their experiences.
 
 ---
 
 ## Epilogue
-> If you have other IT-related recommended links, feel free to leave a comment below~
-> Great ones will be included in the list!<span class="github-emoji" alias="smile" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8">&#x1f604;</span>
+> Have another computing resource to recommend? Feel free to share it in the comments!
+> I'll add useful suggestions to the list!<span class="github-emoji" alias="smile" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8">&#x1f604;</span>
 <!-- LANG:EN END -->

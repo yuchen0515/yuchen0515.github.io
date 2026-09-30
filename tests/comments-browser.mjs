@@ -57,8 +57,20 @@ await context.route('https://yuchen0515.github.io/css/comments-*.css', route => 
 await context.route('**/js/site.js', route => route.fulfill({contentType:'application/javascript',body:script}));
 
 try {
-  await check('unconfigured real preview never loads a provider or a fake composer', async () => {
-    await page.goto(new URL(article, base).href,{waitUntil:'domcontentloaded'});
+  const pending = cheerio.load(original);
+  pending('[data-comment-widget]').attr('data-comment-configured','false').attr('data-comment-category','').attr('data-comment-category-id','').attr('hidden','');
+  pending('[data-comment-status]').text('留言功能正在設定中。');
+  pending('[data-comment-fallback]').removeAttr('hidden');
+  pending('main').prepend('<p>隔離測試介面：空設定樣本，沒有真留言、登入或投稿。</p>');
+  await context.route('https://pending.owen.invalid/**', async route => {
+    const url=new URL(route.request().url());
+    if(decodeURI(url.pathname)===decodeURI(article))return route.fulfill({contentType:'text/html',body:pending.html()});
+    if(url.pathname==='/js/site.js')return route.fulfill({contentType:'application/javascript',body:script});
+    const local=await fetch(new URL(url.pathname+url.search,base));
+    return route.fulfill({status:local.status,contentType:local.headers.get('content-type')||'application/octet-stream',body:Buffer.from(await local.arrayBuffer())});
+  });
+  await check('explicit empty-configuration fixture never loads a provider or a fake composer', async () => {
+    await page.goto('https://pending.owen.invalid'+article,{waitUntil:'domcontentloaded'});
     await page.locator('[data-open-comments]').click();
     assert.equal(await page.locator('[data-open-comments]').getAttribute('href'),'#discussion');
     assert.equal(await page.locator('[data-comment-widget]').getAttribute('data-comment-configured'),'false');
@@ -66,7 +78,7 @@ try {
     assert.equal(await page.locator('[data-comment-status]').textContent(),'留言功能正在設定中。');
     assert.equal(providerLoads,0);
     assert.equal(await page.locator('[data-comment-fallback]').getAttribute('href'),'https://github.com/yuchen0515/yuchen0515.github.io/issues/8');
-    return {providerLoads, accountSetupPending:true};
+    return {providerLoads, accountSetupPending:true, dataMode:'explicit blank-configuration fixture'};
   });
   const $ = cheerio.load(original);
   $('[data-comment-widget]').attr('data-comment-configured','true').attr('data-comment-repo-id','R_kgDOHSayAQ').attr('data-comment-category','Isolated fixture').attr('data-comment-category-id','DIC_fixture').removeAttr('hidden');

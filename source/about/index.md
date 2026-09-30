@@ -175,13 +175,13 @@ date: 2025-04-24 00:00:00
 
 ## About Me (English Version)
 
-👋 Hi there! I'm **Yu-Chen Lin**.
+👋 Hi, I'm **Yu-Chen (Owen) Lin**.
 
-I hold a Master's degree in Computer Science and Information Engineering from **National Taiwan University (NTU)**. Currently, I'm working as an **R&D Engineer II** at **Ansys**, where I focus on developing applications using Large Language Models (LLMs) and Machine Learning (ML), particularly for code generation and question-answering systems in the engineering domain.
+I have a master's degree in Computer Science and Information Engineering from **National Taiwan University (NTU)**. I work as an **R&D Engineer II** at **Ansys**, developing applications of large language models (LLMs) and machine learning (ML), with a focus on code generation and question answering for engineering.
 
-I'm passionate about tackling challenging problems, whether in software development, competitive programming, or exploring the latest advancements in AI. I'm also one of the operators of the **[LLM Free Space](https://www.facebook.com/share/g/1BjqyrL5RV/)** community, regularly sharing insights and techniques related to LLMs.
+I enjoy technical research and challenging problems, from software development and competitive programming to exploring new LLM and AI techniques. I also run the **[LLM Free Space](https://www.facebook.com/share/g/1BU7EVX2se/)** Facebook group, where I regularly share LLM news and technical insights.
 
-This page documents my educational background, work experience, project highlights, and competitive achievements. Feel free to reach out if you're interested in my profile or have potential collaboration opportunities!
+Here you'll find my education, work experience, projects, and competition achievements. Take your time exploring, and feel free to get in touch if you'd like to collaborate!
 
 ---
 
@@ -189,14 +189,14 @@ This page documents my educational background, work experience, project highligh
 
 *   `2022.09 - 2024.06`
     <a href="https://www.ntu.edu.tw/"><img src="https://www.ntu.edu.tw/images/about/emblem_1.png" height=15 alt="NTU Logo"></a> | **National Taiwan University (NTU)**
-    *   Master, Computer Science and Information Engineering (CSIE)
-    *   *Research Area*: Multimedia Information Retrieval Lab (MIRlab), specializing in Automatic Speech Recognition (ASR). Advisor: Jyh-Shing Roger Jang
+    *   Master's degree in Computer Science and Information Engineering (CSIE)
+    *   *Research*: Automatic Speech Recognition (ASR) at the Multimedia Information Retrieval Lab (MIRlab). Advisor: Jyh-Shing Roger Jang
     *   *Academic Performance*: GPA: 4.27/4.3, Rank: 12/154 (Top 10%)
 *   `2018.09 - 2022.06`
     <a href="https://www.ntnu.edu.tw/"><img src="https://upload.wikimedia.org/wikipedia/zh/thumb/c/c3/National_Taiwan_Normal_University_logo.svg/200px-National_Taiwan_Normal_University_logo.svg.png" height=15 alt="NTNU Logo"></a> | **National Taiwan Normal University (NTNU)**
-    *   Bachelor, Computer Science and Information Engineering (CSIE)
+    *   Bachelor's degree in Computer Science and Information Engineering (CSIE)
     *   *Academic Performance*: Rank: 1/68 (Top 1.47%), Academic Excellence Award for Graduating Class
-    *   *Honor*: Honorary Membership of the Phi Tau Phi Scholastic Honor Society
+    *   *Honor*: Honorary member of the Phi Tau Phi Scholastic Honor Society
 *   `2015.09 - 2018.06`
     <a href="https://www.ylsh.ilc.edu.tw/ischool/publish_page/0/"><img src="https://upload.wikimedia.org/wikipedia/zh/8/8b/YLSHlogo.gif" height=15 alt="YLSH Logo"></a> | **National Yilan Senior High School (YLSH)**
 
@@ -209,52 +209,52 @@ This page documents my educational background, work experience, project highligh
     >   `2023.07 - 2024.08`
     >   Ansys - Machine Learning Research Intern
 
-    *   Leading R&D initiatives within the Machine Learning team, focusing on LLM applications in the engineering domain.
+    *   Leading R&D projects within the Machine Learning team, focusing on LLM applications for engineering.
     *   **Key Projects & Contributions**:
         *   **RedHawk-SC Copilot (Code Generation)**:
-            *   🏆 Won the **Championship** at the 2nd **Tech New Star Competition (Generative AI Track)**.
-            *   Developed innovative methods (Semantic Splitter, Data Renovation Framework) improving LLM code generation accuracy to ≥80% for medium-complexity tasks.
-            *   Achieved a 143% performance boost over Google's CoT prompting in an Arena evaluation with 28 domain experts (182 votes).
-            *   📜 Research presented at **DAC 2024 (Poster)** and **LAD'24 (Oral Presentation)**.
-            *   💡 Granted a **patent** for the novel code generation methodology.
+            *   🏆 Won **1st Place** at the 2nd **Tech New Star Competition (Generative AI Track)**.
+            *   Developed Semantic Splitter and Data Renovation Framework methods, improving LLM code generation accuracy to ≥80% on tasks of medium complexity.
+            *   Improved performance by 143% over Google's chain-of-thought (CoT) prompting in an Arena evaluation by 28 domain experts (182 votes).
+            *   📜 Presented the research at **DAC 2024 (Poster)** and **LAD'24 (Oral Presentation)**.
+            *   💡 Obtained a **patent** for the code generation method.
         *   **RedHawk-SC Domain-Specific Q&A System**:
-            *   Engineered LLM optimization techniques, doubling performance metrics (3.2 → 6.4/10) on internal datasets.
-            *   Implemented Contextual Retrieval Augmentation for enterprise knowledge management.
+            *   Developed LLM optimization techniques that doubled the performance score (3.2 → 6.4/10) on internal datasets.
+            *   Implemented contextual retrieval augmentation for enterprise knowledge management.
         *   **Real-Time Speech-to-Text (STT) Pipeline**:
-            *   Optimized OpenAI Whisper architecture, achieving 0.33s latency for 6s audio (0.0537 RTF).
-            *   Reduced Character Error Rate (CER) to 13%.
+            *   Optimized the OpenAI Whisper architecture, achieving 0.33s latency for 6s of audio (real-time factor, RTF: 0.0537).
+            *   Reduced the character error rate (CER) to 13%.
     *   **Technical Sharing**: Delivered two technical seminars to 100+ attendees (including executives) on code generation applications.
     *   Contributed to the initial research and development of the RedHawk-SC code generation, Q&A system, and real-time STT projects mentioned above.
-    *   Focused on tracking the latest LLM trends and applying them to solve practical engineering problems.
+    *   Followed developments in LLMs and applied them to practical engineering problems.
 
 *   `2021.07 - 2022.06`
     <a href="https://www.kkbox.com/tw/tc/"><img src="https://www.kkbox.com/about/img/logo/app_icon.svg" height=15 alt="KKBOX Logo"></a> | **KKCompany (KKBOX)** - **Backend Engineer Intern (Management Associate)**
     *   Participated in the **Tomorrow Program (MA Program)**.
     *   Key Contributions:
-        *   Developed the front-end, back-end, and database design for an internal "Permission Management System" (Laravel, Vue.js, MySQL).
-        *   Collaborated with senior engineers to complete a 1M+ level song conversion API (Laravel).
-        *   Led the design of algorithm questions for full-time position interviews (C++, Algorithm).
-        *   Participated in designing and launching the company's project management process (TPM).
+        *   Contributed to the front-end, back-end, and database design and development of an internal permission management system (Laravel, Vue.js, MySQL).
+        *   Worked with senior engineers to build a song-conversion API at a million-song scale (Laravel).
+        *   Led the design of algorithm questions for full-time engineering interviews (C++, algorithms).
+        *   Helped design and introduce the company's project management process (TPM).
 
 *   `2021.01 - 2021.03`
     <a href="https://tpmso.org/toi/"><img src="https://tpmso.org/toi/wp-content/uploads/2022/04/TOI_web1.png" height=15 alt="TOI Logo"></a><a href="https://www.ntnu.edu.tw/"><img src="https://upload.wikimedia.org/wikipedia/zh/thumb/c/c3/National_Taiwan_Normal_University_logo.svg/200px-National_Taiwan_Normal_University_logo.svg.png" height=15 alt="NTNU Logo"></a> | **Taiwan Olympiad in Informatics (TOI) Preliminary** - **Question Designer**
 
 *   `2020.09 - 2021.06`
     <a href="https://www.ntnu.edu.tw/"><img src="https://upload.wikimedia.org/wikipedia/zh/thumb/c/c3/National_Taiwan_Normal_University_logo.svg/200px-National_Taiwan_Normal_University_logo.svg.png" height=15 alt="NTNU Logo"></a> | **National Taiwan Normal University, CSIE** - **Teaching Assistant (Programming Course)**
-    *   Served as TA for C Programming (I) & (II).
-    *   Responsible for designing competition-oriented assignments and providing tutoring.
+    *   Served as a teaching assistant for C Programming (I) & (II).
+    *   Designed assignments based on programming contests and tutored students.
     *   TA Evaluation Score: `4.74 / 5.00`.
 
 ---
 
 ### 🏆 Awards & Honors
 
-*   `2023.11` 🏆 **Championship** | **Tech New Stars Competition - Generative AI Track**
-    *   Competed with the Ansys project "Code Generator for Engineering Applications", winning first place among 18 teams nationwide.
+*   `2023.11` 🏆 **1st Place** | **Tech New Stars Competition - Generative AI Track**
+    *   Won first place among 18 teams nationwide with the Ansys project "Code Generator for Engineering Applications".
 *   `2023.01` 🏆 **1st Place** | **Hahow Course Prediction Competition - NTU Deep Learning Application Course**
-    *   Achieved first place among 61 teams through model design and strategic application.
+    *   Placed first among 61 teams through model design and competition strategy.
 *   `2022.06` 🏆 **Winning Team** | **E.SUN AI Open Challenge - "See Your Voice" ASR Post-Correction**
-    *   Developed a model meeting strict performance limits (10 requests/sec) with a teammate, winning among 119 teams.
+    *   Worked with a teammate to develop a model that processed 10 requests within 1 second, earning an award among 119 teams.
 *   `2022.06` **Academic Excellence Award for Graduating Class** | National Taiwan Normal University
 *   `2020.10` 🥉 **Bronze Medal** | **ACM-ICPC Asia Taipei Regional Contest**
 *   `2019.10` **28th Place** | **ACM-ICPC Asia Taoyuan Regional Contest**
@@ -265,20 +265,20 @@ This page documents my educational background, work experience, project highligh
 
 ### 💡 Selected Projects
 
-*   `2022.11 - 2023.01` **Subtitles Generator using WeNet/Whisper**
-    *   Final project for NTU "Introduction to Digital Speech Processing". Developed a website for automatically generating and embedding subtitles from YouTube URLs.
-    *   Initially used WeNet Toolkits, later switched to OpenAI Whisper for multi-language support and improved accuracy.
+*   `2022.11 - 2023.01` **Subtitle Generator using WeNet/Whisper**
+    *   Final project for NTU's "Introduction to Digital Speech Processing" course. Built a website that generates and embeds subtitles from a YouTube URL.
+    *   Started with WeNet Toolkits, then switched to OpenAI Whisper for multilingual support and better recognition accuracy.
     *   [Report (WeNet Version)](https://nas.mirlab.org/drive/d/s/s9MFwfWTDLFd7bh8WXVKHWJELd8IRcbB/GwnqoIZ2fix53W1RCr4Y2-b-albuet8n-3rYAb5FNLAo)
 *   `2020.09 - 2021.06` **Applying "Threat Space" to Accelerate MCTS Algorithm in 5x5 Shogi (Mini-Shogi)**
-    *   Undergraduate thesis project. Researched improving Mini-Shogi AI performance under limited resources using MCTS combined with "threat space" (critical moves).
+    *   Undergraduate capstone project. Researched how to improve Mini-Shogi (5x5) AI under limited resources by combining Monte Carlo Tree Search (MCTS) with "threat space" (critical moves).
     *   Recommended for participation in the TCGA Game Competition. [GitHub DEMO](https://github.com/yuchen0515/project)
-*   `2021.04 - 2021.06` **Solving CodinGame "Coders Strike Back" Using Heuristic Algorithm**
-    *   Project for "Heuristic Algorithms" course. Used Differential Evolution to control spacecraft, achieving the highest rank **Legend (Top 0.213%)** on the CodinGame platform for this game.
+*   `2021.04 - 2021.06` **Solving CodinGame "Coders Strike Back" Using a Heuristic Algorithm**
+    *   Project for the "Heuristic Algorithms" course. Used Differential Evolution to control spacecraft, reaching the game's highest league, **Legend (Top 0.213%)**, on CodinGame.
     *   [Result Screenshot](https://nas.mirlab.org/drive/d/s/rOwtbsjFbgcrzYl9WJYSoRd6ICNNdFAE/BN841xjeu3a1yWX5136jyN-U2ucm_xXU-nrGg971NCAo)
 *   `2021.04 - 2021.06` **Getting Things Done (GTD) System**
-    *   Final project for "Database Theory". Developed a web application for note-taking, scheduling, and project management.
-    *   Tech Stack: Vue.js (Frontend), Node.js (Backend), SQL. Responsible for frontend-backend integration and schema design.
-    *   Received 2nd place in the course popularity vote (2/17).
+    *   Final project for the "Database Theory" course. Built a web application for notes, scheduling, and project management.
+    *   Tech Stack: Vue.js (Frontend), Node.js (Backend), SQL. Handled front-end and back-end integration and database schema design.
+    *   Placed 2nd out of 17 projects in the course popularity vote (2/17).
 
 ---
 
@@ -316,10 +316,10 @@ This page documents my educational background, work experience, project highligh
 
 ### 👥 Activities & Leadership
 
-*   `Spring 2020` **Coordinator** | Elementary Service Learning Course
+*   `Spring 2020` **Coordinator** | Introductory Service Learning Course
 *   `Spring 2019` **Coordinator** | "Tech Fun Egg" Technology Education Event
-*   `Spring 2019` **Coordinator** | "FenXiang" Joint Cross-University Achievement Presentation
-*   `Fall 2018` **Coordinator** | "HangLiu" Joint Cross-University Achievement Presentation
+*   `Spring 2019` **Coordinator** | "FenXiang" Joint University End-of-Term Showcase
+*   `Fall 2018` **Coordinator** | "HangLiu" Joint University End-of-Term Showcase
 
 ---
 
