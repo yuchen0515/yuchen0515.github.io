@@ -2,7 +2,7 @@
 
 這個服務將全站按讚數存入 Cloudflare D1。讀者不需要登入；瀏覽器保存一個隨機 UUID 作為識別碼，資料庫保存它的 HMAC 摘要。文章討論與 GitHub 登入由網站的留言系統分開處理。
 
-2026-10-02 擁有者已授權並完成 Cloudflare 官方登入。正式 Worker 已部署至 `https://owen-blog-likes.goldenaifintech.workers.dev`，使用獨立 D1 與正式 HMAC 密鑰；兩位匿名測試訪客的共享、冪等、保留狀態與取消均通過，測試按讚已取消。本機計數未移入正式資料庫。網站填入此真 endpoint 後仍需成功發布與正式頁面互動驗收，實際收據保存在本機 audit/。
+2026-10-02 擁有者已授權並完成 Cloudflare 官方登入。正式 Worker 已部署至 `https://owen-blog-likes.goldenaifintech.workers.dev`，使用獨立 D1 與正式 HMAC 密鑰；兩位匿名測試訪客的共享、冪等、保留狀態與取消均通過，測試按讚已取消。本機計數未移入正式資料庫。網站已填入此真 endpoint 並成功發布；正式桌面／手機的四項瀏覽器驗收通過：兩位訪客初始 0，共享 1／2，重新整理保留，逐人取消至 0。finally 再確認兩筆測試票皆已取消；沒有登入、假數字或移用本機計數。實際收據保存在本機 audit/ 與 .history/production-audit/。
 
 ## API
 
