@@ -24,6 +24,7 @@
   $('[data-share]')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('link[rel=canonical]').href);toast('文章連結已複製')}catch{toast('無法存取剪貼簿，請從網址列複製連結。')}});
   const search=$('[data-search-dialog]'), input=$('#site-search'),results=$('[data-search-results]'),status=$('[data-search-status]'); let searchData,searchPromise,querySequence=0;
   all('[data-open-search]').forEach(button=>button.addEventListener('click',()=>{search.showModal();input.focus()}));
+  search?.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();search.close()}});
   document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='k'){event.preventDefault();search.showModal();input.focus()}});
   search?.addEventListener('click',event=>{if(event.target===search){const r=search.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)search.close()}});
   input?.addEventListener('input',async()=>{

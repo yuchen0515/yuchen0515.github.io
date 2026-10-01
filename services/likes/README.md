@@ -2,7 +2,7 @@
 
 這個服務將全站按讚數存入 Cloudflare D1。讀者不需要登入；瀏覽器保存一個隨機 UUID 作為識別碼，資料庫保存它的 HMAC 摘要。文章討論與 GitHub 登入由網站的留言系統分開處理。
 
-目前程式與本機測試已準備好。正式環境需要網站擁有者登入 Cloudflare、建立自己的 D1 資料庫並部署 Worker；範例設定沒有填造假的帳戶或資料庫 ID。正式服務啟用前，網站應顯示「按讚服務尚未啟用」，不以本機數字冒充全站按讚。
+2026-10-02 擁有者已授權並完成 Cloudflare 官方登入。正式 Worker 已部署至 `https://owen-blog-likes.goldenaifintech.workers.dev`，使用獨立 D1 與正式 HMAC 密鑰；兩位匿名測試訪客的共享、冪等、保留狀態與取消均通過，測試按讚已取消。本機計數未移入正式資料庫。網站填入此真 endpoint 後仍需成功發布與正式頁面互動驗收，實際收據保存在本機 audit/。
 
 ## API
 
@@ -47,7 +47,7 @@ node scripts/smoke.mjs
 
 ## 正式啟用
 
-由擁有者完成 Cloudflare 登入並明確確認這是要啟用的服務。以下會建立正式外部狀態；本次本機驗證沒有執行它們。
+首次啟用須由擁有者完成 Cloudflare 登入並明確授權。本站已完成正式建立與部署；以下保留首次設定程序。例行更新沿用既有資料庫與密鑰，只部署更新後的程式及文章允許清單，不重做建立或產生密鑰。正式 CORS 現僅允許本站 HTTPS origin。
 
 1. 複製 `wrangler.example.jsonc` 為 `wrangler.production.jsonc`。保持 `DB` binding 名稱。
 2. 執行 `npx wrangler login`，在開啟的瀏覽器中登入自己的 Cloudflare 帳號。

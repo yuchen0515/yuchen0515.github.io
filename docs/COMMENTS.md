@@ -14,6 +14,6 @@
 
 既有 Issues 8／9／10／11 及 Links 6 保留，不轉換或刪除。目前唯讀核對皆無留言。舊 Gitalk 的公開 secret 仍需在原 OAuth App 撤銷，安裝 giscus 不代表已撤銷舊憑證。
 
-留言主題使用本站 HTTPS CSS，內文與輸入框 18px、按鈕至少 44px。localhost 預覽採官方淺色／深色主題，避免外部 HTTPS iframe 讀取本機 CSS 的限制；正式 CSS 字級以隔離 fixture 驗證，真 giscus 仍需上線後核對。
+留言主題使用本站 HTTPS CSS，內文與輸入框 18px、按鈕至少 44px。localhost 預覽採官方淺色／深色主題，避免外部 HTTPS iframe 讀取本機 CSS 的限制；2026-10-02 真 giscus 在正式站完成 5 項匿名唯讀瀏覽器驗收：桌面及 390／320px 的 18px 字體、44px 控制高度、手機無橫向溢出、淺深色 CSS 與可信 resize 均正常。沒有登入或發送留言，不能把這份收據當作 OAuth／真投稿驗收。
 
 設定條件與分類類型依 [giscus 官方文件](https://giscus.app/zh-TW)；自訂 CSS 與動態主題依 [進階用法](https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md)。

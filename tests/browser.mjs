@@ -163,13 +163,29 @@ try {
     await page.keyboard.press('Escape');
     return { results: links };
   });
+  await check('One Escape closes a filled search dialog and preserves the query', async () => {
+    const observations=[];
+    for (const width of [320,390,1440]) {
+      await page.setViewportSize({width,height:900});await visit(page,'/');
+      await page.keyboard.press('Control+k');await page.locator('#site-search').fill('語音');
+      await page.locator('.search-result').first().waitFor();await page.keyboard.press('Escape');
+      await page.locator('[data-search-dialog]').waitFor({state:'hidden'});
+      assert.equal(await page.locator('#site-search').inputValue(),'語音');
+      await page.locator('[data-toggle-theme]').click();
+      const selected=(await page.locator('html').getAttribute('data-theme'))||'light';
+      await page.reload({waitUntil:'domcontentloaded'});
+      assert.equal((await page.locator('html').getAttribute('data-theme'))||'light',selected);
+      observations.push({width,query:'語音',theme:selected});
+    }
+    return observations;
+  });
   await check('Theme choice persists across reload and navigation', async () => {
     await visit(page, '/'); const initial = (await page.locator('html').getAttribute('data-theme')) || 'light';
-    await page.locator('[data-toggle-theme]').click(); const selected = await page.locator('html').getAttribute('data-theme');
+    await page.locator('[data-toggle-theme]').click(); const selected = (await page.locator('html').getAttribute('data-theme')) || 'light';
     assert.notEqual(selected, initial); await page.reload({ waitUntil: 'domcontentloaded' });
-    assert.equal(await page.locator('html').getAttribute('data-theme'), selected);
-    await visit(page, '/archives/'); assert.equal(await page.locator('html').getAttribute('data-theme'), selected);
-    await page.locator('[data-toggle-theme]').click(); assert.equal(await page.locator('html').getAttribute('data-theme'), initial);
+    assert.equal((await page.locator('html').getAttribute('data-theme')) || 'light', selected);
+    await visit(page, '/archives/'); assert.equal((await page.locator('html').getAttribute('data-theme')) || 'light', selected);
+    await page.locator('[data-toggle-theme]').click(); assert.equal((await page.locator('html').getAttribute('data-theme')) || 'light', initial);
     return { initial, selected };
   });
   await check('About preserves both full languages and the common appendix', async () => {

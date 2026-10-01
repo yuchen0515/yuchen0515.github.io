@@ -1,7 +1,7 @@
 intro: 程式、研究與生活筆記。
 intro_en: Notes on programming, research, and everyday life.
 bio: 記錄語音與人工智慧研究、程式開發，以及生活中的觀察。
-likes_endpoint: ''
+likes_endpoint: 'https://owen-blog-likes.goldenaifintech.workers.dev'
 support_url: ''
 comments:
   enabled: true
