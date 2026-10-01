@@ -22,7 +22,7 @@ class ReleaseTests(unittest.TestCase):
         self.run_git('branch', '-f', 'master', BASE)
         self.run_git('checkout', '-b', 'reviewed-fixture', BASE)
         (self.repo/'tools/git-history').mkdir(parents=True, exist_ok=True)
-        for name in ('prepare-source.py', 'git-history/check-authorship.py'):
+        for name in ('prepare-source.py', 'publication_policy.py', 'git-history/check-authorship.py'):
             shutil.copy2(ROOT/'tools'/name, self.repo/'tools'/name)
         (self.repo/'lib').mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT/'lib/public-assets.cjs', self.repo/'lib/public-assets.cjs')
@@ -54,9 +54,26 @@ class ReleaseTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
 
-    def prepare(self):
-        return subprocess.run(['python3', str(self.repo/'tools/prepare-source.py')],
+    def prepare(self, *options):
+        return subprocess.run(['python3', str(self.repo/'tools/prepare-source.py'), *options],
                               cwd=self.repo, env=ENV, text=True, capture_output=True)
+
+    def latest_receipt(self):
+        receipts = sorted((self.repo/'.history/publication-candidates').glob('*/receipt.json'))
+        self.assertTrue(receipts, 'A local review receipt must exist.')
+        return json.loads(receipts[-1].read_text())
+
+    def modified_tree(self, tree, additions):
+        index_dir = Path(tempfile.mkdtemp(prefix='policy-history-index-', dir=self.repo/'.history'))
+        index_env = dict(ENV, GIT_INDEX_FILE=str(index_dir/'index'))
+        command = ['git', '-C', str(self.repo)]
+        subprocess.check_output([*command, 'read-tree', tree], env=index_env, stderr=subprocess.PIPE)
+        for name, content in additions.items():
+            blob = subprocess.check_output([*command, 'hash-object', '-w', '--stdin'],
+                                           input=content.encode(), env=ENV).decode().strip()
+            subprocess.check_output([*command, 'update-index', '--add', '--cacheinfo',
+                                     '100644', blob, name], env=index_env, stderr=subprocess.PIPE)
+        return subprocess.check_output([*command, 'write-tree'], env=index_env, stderr=subprocess.PIPE).decode().strip()
 
     def candidate(self, tree, parents, message='Update article\n'):
         args = ['git', '-C', str(self.repo), 'commit-tree', tree]
@@ -203,6 +220,179 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn('Commit the reviewed work', result.stdout+result.stderr)
         refs = self.run_git('for-each-ref', '--format=%(refname)', 'refs/heads/source')
         self.assertEqual(refs.strip(), '')
+
+    def test_internal_names_are_excluded_at_any_depth_and_unknown_files_stay_local(self):
+        internal = {
+            'AGENTS.md': 'internal operating instructions\n',
+            'CLAUDE.md': 'internal operating instructions\n',
+            'CLAUDE.local.md': 'private local configuration\n',
+            'planning_website_redesign.md': 'private planning\n',
+            'pending_user_review.md': 'private review notes\n',
+            'source/about/AGENTS.md': 'private embedded instructions\n\n![Private operational image](/images/uploads/agent-private.png)\n',
+            'themes/owen/source/js/.claude/settings.json': '{"private":true}\n',
+            'tools/writer/.codex/memory.md': 'private memory\n',
+            'lib/.agents/instructions.md': 'private instructions\n',
+            'tests/fixtures/editorial-20261002/agent-notes.md': 'private operational notes\n',
+            'source/images/memory/private.png': 'private operational bytes\n',
+            'services/likes/wrangler.production.jsonc': '{"private":true}\n',
+            'services/likes/.dev.vars': 'PRIVATE_TEST_VALUE=kept_local\n',
+            'source/about/.env.local': 'PRIVATE_TEST_VALUE=kept_local\n',
+        }
+        unknown = {
+            'meeting-record.md': 'unreviewed operational document\n',
+            'tools/unknown-helper.py': 'unreviewed helper\n',
+            'docs/internal-project-overview.md': 'unreviewed project notes\n',
+            'source/about/private-database.sqlite': 'not an approved public asset\n',
+            'tests/fixtures/editorial-20261002/unreviewed-note.md': 'not an approved historical snapshot\n',
+        }
+        for name, content in {**internal, **unknown}.items():
+            self.write(name, content)
+        self.write('source/images/uploads/agent-private.png', 'private operational image bytes\n')
+        self.run_git('add', '--all')
+        self.run_git('commit', '-m', 'Add local operational fixture')
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        files = set(self.run_git('ls-tree', '-r', '--name-only', 'source').splitlines())
+        receipt = self.latest_receipt()
+        reasons = {item['path']: item['reason'] for item in receipt['excluded_files']}
+        for name, content in {**internal, **unknown}.items():
+            with self.subTest(path=name):
+                self.assertNotIn(name, files)
+                self.assertIn(name, reasons)
+                self.assertTrue(reasons[name])
+                self.assertEqual((self.repo/name).read_text(), content)
+        self.assertEqual(self.run_git('rev-parse', 'source^').strip(), BASE)
+        self.assertNotIn('source/images/uploads/agent-private.png', files)
+        self.assertEqual(reasons['source/images/uploads/agent-private.png'], 'unpublished upload')
+        self.assertEqual((self.repo/'source/images/uploads/agent-private.png').read_text(), 'private operational image bytes\n')
+        self.assertTrue(receipt['parent_history_approved'])
+        self.assertEqual(receipt['history_violations'], [])
+
+    def test_public_build_writer_and_worker_dependencies_are_retained_byte_exactly(self):
+        public = {
+            'README.md': '# Public writing guide\n\nWrite Markdown and save explicitly.\n',
+            'package.json': '{"scripts":{"build":"node tools/build.mjs"}}\n',
+            'package-lock.json': '{"lockfileVersion":3}\n',
+            '_config.yml': 'url: https://example.com\n',
+            '.github/workflows/pages.yml': 'name: Public build\n',
+            'tools/build.mjs': '// public build tool\n',
+            'tools/writer/app.js': '// public writer\n',
+            'scripts/site.cjs': '// public Hexo integration\n',
+            'lib/markdown.cjs': '// public rendering module\n',
+            'themes/owen/layout/page.ejs': '<main>Public page</main>\n',
+            'themes/owen/source/css/site.css': 'body { font-size: 19px; }\n',
+            'themes/owen/source/js/site.js': '// public interaction\n',
+            'services/likes/src/worker.mjs': '// public Worker\n',
+            'services/likes/src/posts.mjs': 'export const posts = [];\n',
+            'services/likes/migrations/0001_likes.sql': 'CREATE TABLE public_fixture (id TEXT);\n',
+            'services/likes/package.json': '{"private":true}\n',
+            'services/likes/package-lock.json': '{"lockfileVersion":3}\n',
+            'services/likes/wrangler.example.jsonc': '{"name":"example"}\n',
+            'services/likes/.dev.vars.example': 'LOCAL_TEST_VALUE=example_only\n',
+            'tools/writer/README.md': 'Each save preserves a preimage in `.history/writer/`.\n',
+            'source/_posts/article-about-language-models.md': 'An authored article can discuss Claude, Codex, and memory.\n',
+            'tests/fixtures/editorial-20261002/about.md': 'Public historical author content.\n',
+        }
+        for name, content in public.items():
+            self.write(name, content)
+        self.run_git('add', '--all')
+        self.run_git('commit', '-m', 'Add public build fixture')
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        receipt = self.latest_receipt()
+        manifest = {item['path']: item for item in receipt['included_files']}
+        for name, content in public.items():
+            with self.subTest(path=name):
+                self.assertEqual(self.run_git('show', 'source:'+name), content)
+                self.assertEqual(manifest[name]['mode'], '100644')
+                self.assertEqual(manifest[name]['blob'], self.run_git('rev-parse', 'source:'+name).strip())
+
+    def test_rejects_removed_internal_files_anywhere_in_prior_public_history(self):
+        self.assertEqual(self.prepare().returncode, 0)
+        clean_tree = self.run_git('rev-parse', 'source^{tree}').strip()
+        cases = [
+            'AGENTS.md', 'CLAUDE.md', 'pending_user_review.md',
+            'source/about/CLAUDE.local.md', 'themes/owen/source/.codex/notes.md',
+            'unreviewed-operations.md',
+        ]
+        for name in cases:
+            with self.subTest(path=name):
+                private_tree = self.modified_tree(clean_tree, {name: 'private fixture content\n'})
+                old = self.candidate(private_tree, [BASE])
+                current = self.candidate(clean_tree, [old])
+                result = self.prepare()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('previous source release', result.stdout+result.stderr)
+                self.assertEqual(self.run_git('rev-parse', 'source').strip(), current)
+                receipt = self.latest_receipt()
+                self.assertFalse(receipt['parent_history_approved'])
+                self.assertFalse(receipt['source_ref_changed'])
+                self.assertIn(name, {item.get('path') for item in receipt['history_violations']})
+
+    def test_internal_text_embedded_in_public_readme_blocks_candidate(self):
+        cases = [
+            'Read AGENTS.md and CLAUDE.md before work.\n',
+            'Read planning_website_redesign.md and pending_user_review.md.\n',
+            'Shared memory navigation remains at a private location.\n',
+            'Private source lives at /Users/private-fixture/project.\n',
+        ]
+        for content in cases:
+            with self.subTest(disclosure=content):
+                self.write('README.md', content)
+                self.run_git('add', 'README.md')
+                self.run_git('commit', '-m', 'Add documentation disclosure fixture')
+                result = self.prepare()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('public document contains internal', result.stdout+result.stderr)
+                self.assertEqual(self.run_git('for-each-ref', '--format=%(refname)', 'refs/heads/source').strip(), '')
+                receipt = self.latest_receipt()
+                self.assertEqual(receipt['candidate_violations'][0]['path'], 'README.md')
+                self.assertFalse(receipt['source_ref_changed'])
+                self.assertEqual((self.repo/'README.md').read_text(), content)
+
+    def test_removed_readme_disclosures_in_old_releases_block_matching_tree(self):
+        self.assertEqual(self.prepare().returncode, 0)
+        clean_tree = self.run_git('rev-parse', 'source^{tree}').strip()
+        private_tree = self.modified_tree(clean_tree, {'README.md': 'Read CLAUDE.md and private shared memory navigation.\n'})
+        old = self.candidate(private_tree, [BASE])
+        current = self.candidate(clean_tree, [old])
+        result = self.prepare()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.run_git('rev-parse', 'source').strip(), current)
+        receipt = self.latest_receipt()
+        self.assertTrue(any(item.get('path') == 'README.md' and 'internal' in item['reason']
+                            for item in receipt['history_violations']))
+        self.assertFalse(receipt['source_ref_changed'])
+
+    def test_review_only_lists_exact_tree_and_exclusions_without_commit_or_ref_change(self):
+        before = self.run_git('rev-list', '--all').splitlines()
+        result = self.prepare('--review-only')
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(self.run_git('rev-list', '--all').splitlines(), before)
+        self.assertEqual(self.run_git('for-each-ref', '--format=%(refname)', 'refs/heads/source').strip(), '')
+        receipt = self.latest_receipt()
+        self.assertTrue(receipt['review_only'])
+        self.assertFalse(receipt['source_ref_changed'])
+        self.assertFalse(receipt['external_push_performed'])
+        self.assertNotIn('commit', receipt)
+        self.assertTrue(receipt['included_files'])
+        self.assertIn('source/_drafts/private.md', receipt['excluded_paths'])
+        paths = self.run_git('ls-tree', '-r', '--name-only', receipt['tree']).splitlines()
+        self.assertEqual(sorted(item['path'] for item in receipt['included_files']), sorted(paths))
+
+    def test_symlink_cannot_smuggle_private_content_through_public_source(self):
+        path = self.repo/'source/about/leaked.md'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.symlink_to('../_drafts/private.md')
+        self.run_git('add', 'source/about/leaked.md')
+        self.run_git('commit', '-m', 'Add symlink fixture')
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertNotIn('source/about/leaked.md', self.run_git('ls-tree', '-r', '--name-only', 'source').splitlines())
+        receipt = self.latest_receipt()
+        self.assertTrue(any(item['path'] == 'source/about/leaked.md' and 'symlinks' in item['reason']
+                            for item in receipt['excluded_files']))
+        self.assertTrue(path.is_symlink())
 
 if __name__ == '__main__':
     unittest.main()

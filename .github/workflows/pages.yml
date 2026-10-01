@@ -21,6 +21,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: python3 tools/git-history/check-authorship.py history --repo . --all
+      - run: python3 tools/git-history/check-publication.py --repo . --revision HEAD
       - name: Run tests
         shell: bash
         run: |
