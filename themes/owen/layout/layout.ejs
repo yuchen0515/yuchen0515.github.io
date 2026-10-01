@@ -21,7 +21,7 @@ const canonical = config.url.replace(/\/$/,'') + (page.redirect_to || '/' + (pag
   <header class="site-header">
     <div class="header-inner">
       <a class="wordmark" href="/" aria-label="Owen Lin 首頁">Owen Lin<span>林育辰</span></a>
-      <nav class="site-nav" aria-label="主要導覽"><a href="/archives/" <%- is_archive() ? 'aria-current="page"' : '' %>>文章</a><a href="/links/">資源</a><a href="/about/">關於</a></nav>
+      <nav class="site-nav" aria-label="主要導覽"><a href="/archives/" <%- is_archive() ? 'aria-current="page"' : '' %>>文章</a><a href="/links/" <%- page.path && page.path.startsWith('links/') ? 'aria-current="page"' : '' %>>資源</a><a href="/about/" <%- page.path && page.path.startsWith('about/') ? 'aria-current="page"' : '' %>>關於</a></nav>
       <div class="header-actions"><button type="button" class="icon-button" data-open-search aria-label="搜尋文章"><%- icon('search') %></button><button type="button" class="icon-button" data-toggle-theme aria-label="切換深色模式"><span class="light-icon"><%- icon('moon') %></span><span class="dark-icon"><%- icon('sun') %></span></button></div>
     </div>
   </header>

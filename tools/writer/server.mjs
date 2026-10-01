@@ -2,13 +2,14 @@ import http from 'node:http';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { load } from 'cheerio';
 import { WriterError, WriterStore, documentParts, previewParts } from './storage.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const staticFiles = new Map([
   ['/app.js', ['app.js', 'text/javascript; charset=utf-8']],
+  ['/recovery.js', ['recovery.js', 'text/javascript; charset=utf-8']],
   ['/writer.css', ['writer.css', 'text/css; charset=utf-8']],
   ['/preview.css', ['preview.css', 'text/css; charset=utf-8']],
 ]);
@@ -119,7 +120,7 @@ export async function createWriterServer({ projectRoot = path.resolve(here, '../
       if (request.method !== 'GET' && request.method !== 'HEAD') throw new WriterError(405, '這個操作不支援。');
       if (url.pathname === '/' || url.pathname === '/index.html') {
         const template = await fs.readFile(path.join(here, 'index.html'), 'utf8');
-        return send(200, template.replace('__WRITER_TOKEN__', escapeHTML(token)), 'text/html; charset=utf-8');
+        return send(200, template.replace('__WRITER_TOKEN__', escapeHTML(token)).replace('__WRITER_PROJECT__', createHash('sha256').update(store.root).digest('hex')), 'text/html; charset=utf-8');
       }
       if (staticFiles.has(url.pathname)) {
         const [file, mime] = staticFiles.get(url.pathname);

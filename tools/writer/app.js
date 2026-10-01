@@ -7,6 +7,18 @@ let editorSnapshot = '';
 let editorInput = null;
 let imageQueue = Promise.resolve();
 let copiedImageMarkdown = '';
+let insertingImage = false;
+let bufferChanged = false;
+let browserStorage;
+try { browserStorage = window.localStorage; } catch { /* Editing remains available without browser storage. */ }
+let browserSession;
+try { browserSession = window.sessionStorage; } catch { /* The shared last document remains a fallback. */ }
+const project = document.querySelector('meta[name="writer-project"]').content;
+const recovery = WriterRecovery.create({ storage: browserStorage, project, writerId: crypto.randomUUID() });
+const lastDocumentKey = `owen.writer.last-document.v1:${project}`;
+let backupOK = true;
+let recoveryRecords = [];
+let recoveryBaseVersion = null;
 let previewTimer;
 let previewController;
 let previewNumber = 0;
@@ -206,11 +218,63 @@ function setStatus(message) { $('status').textContent = message; }
 function updateDirty() {
   const addingImages = imageAnchors.size > 0;
   $('save').disabled = !state.id || !dirty() || state.saving || addingImages;
+  $('download-current').disabled = !state.id;
   $('attach-image').disabled = $('paste-image').disabled = !state.id || addingImages || state.saving;
   if (addingImages) { setStatus('正在加入圖片，文字仍可編輯…'); return; }
-  if (!state.saving) setStatus(dirty() ? '尚有未儲存的修改。' : state.id ? '已儲存在本機。' : '文章與圖片保留在你的本機。');
+  if (!state.saving) setStatus(dirty() ? backupOK ? '未儲存內容已在此瀏覽器備份；按儲存才會寫入檔案。' : '瀏覽器備份無法使用，請儲存或下載目前內容。' : state.id ? '已儲存在本機。' : '文章與圖片保留在你的本機。');
 }
+function backupEditor() {
+  if (!state.id || !bufferChanged) return { ok: true };
+  const result = recovery.save({ id: state.id, content: editor.value, baseVersion: state.version, selectionStart: editor.selectionStart, selectionEnd: editor.selectionEnd, scrollTop: editor.scrollTop });
+  const completed = result.ok && !dirty() ? recovery.acknowledge(state.id, editor.value) : result;
+  backupOK = completed.ok;
+  return completed;
+}
+
+function selectedBackup() { return recoveryRecords.find((record) => record.key === $('recovery-choice').value); }
+function describeBackup() {
+  const record = selectedBackup();
+  $('recovery-note').textContent = record?.baseVersion !== recoveryBaseVersion ? '原檔已有其他修改。可先下載比對；還原後儲存仍會檢查版本，避免覆蓋新內容。' : '備份只在此瀏覽器。還原會放回編輯區，原始檔案要按儲存才會更新。';
+}
+function showRecovery() {
+  const result = recovery.list(state.id);
+  backupOK = result.ok;
+  recoveryRecords = (result.records || []).filter((record) => record.content !== state.saved);
+  const select = $('recovery-choice'); select.replaceChildren();
+  for (const record of recoveryRecords) {
+    const option = document.createElement('option'); option.value = record.key;
+    option.textContent = new Date(record.updatedAt).toLocaleString('zh-TW'); select.append(option);
+  }
+  $('recovery').hidden = !recoveryRecords.length;
+  describeBackup();
+}
+function downloadMarkdown(content, suffix = '未儲存') {
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/markdown;charset=utf-8' }));
+  const link = document.createElement('a'); link.href = url;
+  link.download = `${(state.id || '文章.md').split('/').at(-1).replace(/\.md$/, '')}-${suffix}.md`;
+  link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+$('recovery-choice').addEventListener('change', describeBackup);
+$('download-current').addEventListener('click', () => { if (state.id) downloadMarkdown(editor.value, '編輯副本'); });
+$('download-backup').addEventListener('click', () => { const record = selectedBackup(); if (record) downloadMarkdown(record.content, '備份'); });
+$('restore-backup').addEventListener('click', () => {
+  const record = selectedBackup(); if (!record || !canLeave()) return;
+  editor.value = record.content; editorSnapshot = editor.value; editorInput = null; bufferChanged = true;
+  state.version = record.baseVersion;
+  editor.setSelectionRange(record.selectionStart, record.selectionEnd);
+  editor.scrollTop = record.scrollTop;
+  $('recovery').hidden = true; selectTab(false); editor.focus({ preventScroll: true });
+  const copied = backupEditor();
+  if (copied.ok && copied.record?.key !== record.key) recovery.dismiss(record.key, record.content);
+  updateDirty(); schedulePreview();
+});
+$('keep-file').addEventListener('click', () => {
+  const record = selectedBackup(); if (!record) return;
+  const result = recovery.dismiss(record.key, record.content); backupOK = result.ok;
+  showRecovery(); updateDirty();
+});
 function canLeave() {
+  backupEditor();
   if (state.saving) { setStatus('正在儲存，完成後即可切換文件。'); return false; }
   if (imageAnchors.size) { setStatus('圖片尚在加入中，完成後即可切換文件。'); return false; }
   return !dirty() || window.confirm('目前有尚未儲存的修改。確定離開這份文件？');
@@ -261,15 +325,17 @@ function selectDocument(result) {
   scrollSync.ready = false;
   scrollSync.driver = 'editor';
   scrollSync.points = []; scrollSync.tops = { editor: 0, preview: 0 };
-  state.id = result.id; state.version = result.version; state.saved = result.content;
-  state.generation += 1;
+  state.id = result.id; state.version = result.version; state.saved = result.content; recoveryBaseVersion = result.version;
+  try { browserStorage?.setItem(lastDocumentKey, result.id); } catch { /* A file can still be opened without storage. */ }
+  try { browserSession?.setItem(lastDocumentKey, result.id); } catch { /* Each tab remains usable without preferences. */ }
+  state.generation += 1; bufferChanged = false;
   editorInput = null; editorSnapshot = result.content; copiedImageMarkdown = ''; $('image-result').hidden = true;
   editor.value = result.content; editor.scrollTop = 0; editor.disabled = false;
   $('attach-image').disabled = false;
   const document = state.documents.find((item) => item.id === result.id);
   $('kind').textContent = result.id.startsWith('pages/') ? '網站頁面' : result.id.startsWith('drafts/') ? '草稿' : '文章';
   $('document-name').textContent = document?.name || result.id.split('/').slice(1).join('/');
-  clearError(); updateDirty(); drawLibrary(); schedulePreview();
+  clearError(); showRecovery(); updateDirty(); drawLibrary(); schedulePreview();
   editor.focus();
 }
 
@@ -288,7 +354,8 @@ async function save() {
   const id = state.id; const content = editor.value; const version = state.version;
   try {
     const result = await api('/api/document', { method: 'PUT', data: { id, content, version } });
-    if (state.id === id) { state.saved = content; state.version = result.version; }
+    recovery.acknowledge(id, content);
+    if (state.id === id) { state.saved = content; state.version = result.version; recoveryBaseVersion = result.version; backupEditor(); }
     setStatus(`已儲存 · ${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`);
   } catch (error) { showError(error.message); setStatus('尚未儲存，編輯內容仍保留在畫面。'); }
   finally { state.saving = false; updateDirty(); }
@@ -405,11 +472,31 @@ async function insertImages(files, anchor = beginImageInsertion()) {
       const prefix = start > 0 && editor.value[start - 1] !== '\n' ? '\n\n' : '';
       const text = `${prefix}${markdown}\n`;
       const originalSelection = editor.selectionStart === start && editor.selectionEnd === end;
-      editor.setRangeText(text, start, end, originalSelection ? 'end' : 'preserve');
+      const activeBefore = document.activeElement;
+      const selection = { start: editor.selectionStart, end: editor.selectionEnd, direction: editor.selectionDirection, scroll: editor.scrollTop };
+      const before = editor.value;
+      const expected = before.slice(0, start) + text + before.slice(end);
+      // Native insertText preserves the textarea's undo buffer. Isolate this
+      // compatibility path; unsupported browsers retain the existing insertion.
+      insertingImage = true;
+      try {
+        editor.focus({ preventScroll: true }); editor.setSelectionRange(start, end);
+        try { document.execCommand('insertText', false, text); } catch { /* Use the non-native fallback below. */ }
+        if (editor.value === before) editor.setRangeText(text, start, end, 'end');
+      } finally { insertingImage = false; editorInput = null; }
+      if (editor.value !== expected) throw new Error('圖片已保存；請複製下方語法加入原文。');
+      if (!originalSelection) {
+        const delta = text.length - (end - start);
+        const nextStart = selection.start > end ? selection.start + delta : selection.start > start ? start : selection.start;
+        const nextEnd = selection.end > end ? selection.end + delta : selection.end > start ? start + text.length : selection.end;
+        editor.setSelectionRange(nextStart, nextEnd, selection.direction);
+      }
+      editor.scrollTop = selection.scroll;
+      if (activeBefore !== editor) activeBefore?.focus({ preventScroll: true });
       trackImageAnchors(anchor, { start, end, nextEnd: start + text.length, rightAffinity: true });
       anchor.start = anchor.end = start + text.length;
       scrollSync.driver = 'editor';
-      updateDirty(); schedulePreview();
+      bufferChanged = true; backupEditor(); updateDirty(); schedulePreview();
       const active = document.activeElement;
       const keepEditing = active === editor || ['paste-image', 'attach-image', 'image-input'].includes(active?.id);
       if (originalSelection && keepEditing) { selectTab(false); editor.focus(); }
@@ -467,8 +554,8 @@ $('reload-library').addEventListener('click', async () => {
   finally { $('reload-library').disabled = false; }
 });
 $('preview-language').addEventListener('change', schedulePreview);
-editor.addEventListener('beforeinput', (event) => { editorInput = { before: editor.value, start: editor.selectionStart, end: editor.selectionEnd, type: event.inputType || '' }; });
-editor.addEventListener('input', () => { trackImageAnchors(); scrollSync.driver = 'editor'; updateDirty(); schedulePreview(); });
+editor.addEventListener('beforeinput', (event) => { if (insertingImage) return; editorInput = { before: editor.value, start: editor.selectionStart, end: editor.selectionEnd, type: event.inputType || '' }; });
+editor.addEventListener('input', () => { if (insertingImage) return; bufferChanged = true; trackImageAnchors(); scrollSync.driver = 'editor'; backupEditor(); updateDirty(); schedulePreview(); });
 editor.addEventListener('paste', (event) => {
   const images = imageFiles(event.clipboardData);
   if (images.length) { event.preventDefault(); insertImages(images); }
@@ -488,7 +575,7 @@ editor.addEventListener('drop', (event) => {
 $('attach-image').addEventListener('click', () => $('image-input').click());
 $('image-input').addEventListener('change', (event) => { insertImages([...event.target.files]); event.target.value = ''; });
 window.addEventListener('keydown', (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') { event.preventDefault(); save(); } });
-window.addEventListener('beforeunload', (event) => { if (dirty() || imageAnchors.size) { event.preventDefault(); event.returnValue = ''; } });
+window.addEventListener('beforeunload', (event) => { backupEditor(); if (dirty() || imageAnchors.size) { event.preventDefault(); event.returnValue = ''; } });
 
 const dialog = $('draft-dialog');
 $('new-draft').addEventListener('click', () => { if (!canLeave()) return; $('draft-error').hidden = true; $('draft-title').value = ''; dialog.showModal(); $('draft-title').focus(); });
@@ -519,4 +606,9 @@ $('preview-tab').addEventListener('click', () => selectTab(true));
 for (const tab of [$('edit-tab'), $('preview-tab')]) tab.addEventListener('keydown', (event) => { if (['ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); const preview = tab === $('edit-tab'); selectTab(preview); (preview ? $('preview-tab') : $('edit-tab')).focus(); } });
 selectTab(false);
 $('preview').srcdoc = previewDocument('', '<p class="empty-preview">開啟文章後，這裡會顯示即時預覽。</p>');
-loadLibrary().catch((error) => showError(error.message));
+loadLibrary().then(async () => {
+  let previous;
+  try { previous = browserSession?.getItem(lastDocumentKey); } catch { /* Fall back to the last document in this browser. */ }
+  if (!previous) try { previous = browserStorage?.getItem(lastDocumentKey); } catch { /* Opening from the list remains available. */ }
+  if (state.documents.some((item) => item.id === previous)) await openDocument(previous);
+}).catch((error) => showError(error.message));

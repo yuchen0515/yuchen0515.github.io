@@ -5,12 +5,15 @@
   const safeStorage = {get:key=>{try{return localStorage.getItem(key)}catch{return null}},set:(key,value)=>{try{localStorage.setItem(key,value)}catch{}}};
   let toastTimer;
   function toast(message) { const el=$('[data-toast]'); el.textContent=message; el.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.hidden=true,3200); }
-  $('[data-toggle-theme]')?.addEventListener('click',()=>{ const dark=document.documentElement.dataset.theme!=='dark'; document.documentElement.dataset.theme=dark?'dark':'light'; safeStorage.set('owen-theme',dark?'dark':'light'); $('[data-toggle-theme]').setAttribute('aria-label',dark?'切換淺色模式':'切換深色模式'); });
+  const themeButton=$('[data-toggle-theme]');
+  const updateThemeLabel=()=>themeButton?.setAttribute('aria-label',document.documentElement.dataset.theme==='dark'?'切換淺色模式':'切換深色模式');
+  updateThemeLabel();
+  themeButton?.addEventListener('click',()=>{ const dark=document.documentElement.dataset.theme!=='dark'; document.documentElement.dataset.theme=dark?'dark':'light'; safeStorage.set('owen-theme',dark?'dark':'light'); updateThemeLabel(); });
   function setLanguage(language) {
     all('[data-language]').forEach(el=>el.hidden=el.dataset.language!==language);
     all('[data-toc-language]').forEach(el=>el.hidden=el.dataset.tocLanguage!=='all'&&el.dataset.tocLanguage!==language);
     all('[data-language-button]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.languageButton===language)));
-    const title=$('[data-title-zh]'); if(title)title.textContent=language==='zh'?title.dataset.titleZh:title.dataset.titleEn;
+    const title=$('[data-title-zh]'); if(title){title.textContent=language==='zh'?title.dataset.titleZh:title.dataset.titleEn;title.lang=language==='en'?'en':'zh-Hant';}
   }
   all('[data-language-button]').forEach(button=>button.addEventListener('click',()=>setLanguage(button.dataset.languageButton)));
   function showHashLanguage() {
@@ -19,6 +22,15 @@
     if(section){setLanguage(section.dataset.language);requestAnimationFrame(()=>target.scrollIntoView())}
   }
   window.addEventListener('hashchange',showHashLanguage);showHashLanguage();
+  const mobileToc=$('[data-mobile-toc]');
+  mobileToc?.querySelector('nav').addEventListener('click',event=>{
+    const link=event.target.closest('a[href^="#"]');
+    if(!link||event.defaultPrevented||event.button>0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+    let target;try{target=document.getElementById(decodeURIComponent(link.hash.slice(1)))}catch{return}
+    if(!target||target.closest('[hidden]'))return;
+    mobileToc.open=false;
+    requestAnimationFrame(()=>{target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({block:'start'})});
+  });
   all('.prose table').forEach(table=>{const wrap=document.createElement('div');wrap.className='table-scroll';wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label','可橫向捲動的表格');table.before(wrap);wrap.append(table)});
   all('.code-copy').forEach(button=>button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(button.previousElementSibling.textContent);toast('程式碼已複製')}catch{toast('無法存取剪貼簿，請選取程式碼後複製。')}}));
   $('[data-share]')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('link[rel=canonical]').href);toast('文章連結已複製')}catch{toast('無法存取剪貼簿，請從網址列複製連結。')}});

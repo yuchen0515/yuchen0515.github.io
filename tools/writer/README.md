@@ -4,7 +4,7 @@
 連接埠已使用時，可執行 `WRITER_PORT=4175 npm run write`。工具只聆聽本機。
 
 左側「網站頁面」可開啟「個人介紹」或「推薦連結」，也可開啟文章或草稿，直接編輯完整 Markdown，包含標題、日期、標籤等 frontmatter。
-按「儲存」或 `⌘/Ctrl + S` 寫回原檔；沒有自動儲存。預覽與正式網站共用 `lib/markdown.cjs` 的 renderer。
+按「儲存」或 `⌘/Ctrl + S` 寫回原檔。編輯時在目前瀏覽器保留未儲存備份，原檔仍由本人明確儲存；預覽與正式網站共用 `lib/markdown.cjs` 的 renderer。
 手機可切換 Markdown 與預覽。預覽上方的「同步捲動」預設開啟，捲動 Markdown 或預覽時另一邊會對齊相同段落；點擊即可解除，兩邊各自捲動，並記住偏好。重新開啟同步時以最近閱讀的一邊對齊。編輯中預覽更新會保留原文游標與閱讀位置。
 原文裡的 HTML 可預覽，預覽區隔離在禁止執行腳本與送出表單的 iframe。原文編輯區採 16px，預覽內文桌面 19px、手機 18px。
 雙語文章可切換預覽語言。數學與程式碼沿用網站樣式；Mermaid 圖表在寫作桌保留原始碼，正式網站才執行圖表渲染。
@@ -15,6 +15,10 @@
 加入期間保留原插入位置，即使移動游標或繼續輸入，也不會覆蓋新選取的文字；完成前暫停切換文件及儲存。純文字貼上與拖入維持瀏覽器原生操作。
 圖片存入 `source/images/uploads/`，並插入 `/images/uploads/...` 的 Markdown 引用；沒有外部圖床。
 不接收 SVG。圖片加入後仍需儲存文章。
+
+未儲存內容在重新整理、關閉後重開、工具重啟後可恢復：開啟原文件，選「還原到編輯區」，確認後再按儲存。多個備份可依時間選取，也可下載比對；「保留目前檔案」只略過選定備份，內容仍保留在瀏覽器。各頁籤的備份與最後開啟文件互相獨立。原檔已被其他編輯器修改時，恢復仍保留舊版本檢查，會拒絕直接覆寫新原檔。
+「下載 Markdown」會下載目前編輯內容，包含未儲存文字與圖片引用；瀏覽器備份不可用或配額已滿時仍可使用，介面會顯示備份未成功。清除瀏覽器資料會移除這些瀏覽器備份；磁碟上的原稿與修訂仍保留。
+Google Chrome 的實際貼圖已驗證 `⌘/Ctrl + Z` 撤銷及 `⌘/Ctrl + Shift + Z` 重做，保留先前輸入文字；圖片資產不隨撤銷刪除。原生插入不支援時仍可加入圖片。
 
 「新增草稿」只建立 `source/_drafts/*.md`。儲存草稿不會發佈網站。
 已在 `source/_posts` 的文章修改後，也要走網站既有 build／deploy 流程才會更新線上內容。
@@ -32,3 +36,5 @@ API 限制來源、Host 與 token；頁面編輯僅允許 `source/about/index.md
 剪貼簿相容性以 [WebKit 官方說明](https://webkit.org/blog/10855/async-clipboard-api/) 與 [Clipboard.read 文件](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/read) 為依據；實際驗收瀏覽器以收據為準。
 
 另可執行 `node tools/writer/browser-check.mjs`，使用已安裝的 Google Chrome 檢查畫面、貼圖、數學排版與安全隔離，並保留桌面與手機截圖。
+
+`node tools/writer/recovery-browser.mjs` 使用隔離 Chrome 驗證真正剪貼簿撤銷、重載／重啟恢復、多頁籤、下載、版本衝突與備份配額失敗。儲存模組另外由 `tests/writer-recovery.test.cjs` 驗證。

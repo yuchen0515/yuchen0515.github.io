@@ -31,6 +31,16 @@ class ReleaseTests(unittest.TestCase):
         self.write('source/_posts/public.md', 'public article\n\n![Published image](/images/uploads/published.png)\n')
         self.write('source/images/uploads/published.png', 'published uploaded bytes\n')
         self.write('source/images/uploads/draft-only.png', 'draft-only uploaded bytes\n')
+        self.hidden_posts = {
+            'source/_posts/hidden-legacy.md': 'title: Hidden legacy\npublished: false\n---\n\nUnpublished legacy body.\n\n![Private](/images/uploads/legacy-private.png)\n',
+            'source/_posts/hidden-wrapped.md': '---\ntitle: Hidden wrapped\npublished: false\n---\n\nUnpublished wrapped body.\n\n![Private](/images/uploads/wrapped-private.png)\n![Shared](/images/uploads/shared.png)\n',
+        }
+        for name, content in self.hidden_posts.items():
+            self.write(name, content)
+        self.write('source/about/index.md', '---\ntitle: About\n---\n\n![Shared](/images/uploads/shared.png)\n')
+        self.write('source/images/uploads/legacy-private.png', 'legacy private uploaded bytes\n')
+        self.write('source/images/uploads/wrapped-private.png', 'wrapped private uploaded bytes\n')
+        self.write('source/images/uploads/shared.png', 'shared uploaded bytes\n')
         self.run_git('add', '--all')
         self.run_git('commit', '-m', 'Add reviewed fixture')
         self.reviewed = self.run_git('rev-parse', 'HEAD').strip()
@@ -65,11 +75,25 @@ class ReleaseTests(unittest.TestCase):
         self.assertNotIn('source/_drafts/private.md', files)
         self.assertIn('source/images/uploads/published.png', files)
         self.assertNotIn('source/images/uploads/draft-only.png', files)
+        for name, content in self.hidden_posts.items():
+            self.assertNotIn(name, files)
+            self.assertEqual((self.repo/name).read_text(), content)
+        self.assertNotIn('source/images/uploads/legacy-private.png', files)
+        self.assertNotIn('source/images/uploads/wrapped-private.png', files)
+        self.assertIn('source/about/index.md', files)
+        self.assertIn('source/images/uploads/shared.png', files)
+        self.assertEqual((self.repo/'source/images/uploads/legacy-private.png').read_text(), 'legacy private uploaded bytes\n')
+        self.assertEqual((self.repo/'source/images/uploads/wrapped-private.png').read_text(), 'wrapped private uploaded bytes\n')
+        self.assertEqual((self.repo/'source/images/uploads/shared.png').read_text(), 'shared uploaded bytes\n')
         self.assertEqual((self.repo/'source/images/uploads/published.png').read_text(), 'published uploaded bytes\n')
         self.assertEqual((self.repo/'source/images/uploads/draft-only.png').read_text(), 'draft-only uploaded bytes\n')
         self.assertIn('draft-only.png', (self.repo/'source/_drafts/private.md').read_text())
         receipt = json.loads(next((self.repo/'.history/publication-candidates').glob('*/receipt.json')).read_text())
         self.assertIn('source/images/uploads/draft-only.png', receipt['excluded_paths'])
+        self.assertTrue(set(self.hidden_posts).issubset(receipt['excluded_paths']))
+        self.assertIn('source/images/uploads/legacy-private.png', receipt['excluded_paths'])
+        self.assertIn('source/images/uploads/wrapped-private.png', receipt['excluded_paths'])
+        self.assertNotIn('source/images/uploads/shared.png', receipt['excluded_paths'])
         self.assertFalse(receipt['private_source_ancestry_included'])
         self.assertFalse(receipt['external_push_performed'])
         first = self.run_git('rev-parse', 'source').strip()
@@ -118,6 +142,51 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn('previous source release', result.stdout+result.stderr)
         self.assertEqual(self.run_git('rev-parse', 'source').strip(), current)
         self.assertEqual((self.repo/'source/images/uploads/draft-only.png').read_text(), 'draft-only uploaded bytes\n')
+
+    def test_rejects_unpublished_article_in_previous_release_before_matching_tree_shortcut(self):
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        clean_tree = self.run_git('rev-parse', 'source^{tree}').strip()
+        for name, content in self.hidden_posts.items():
+            with self.subTest(frontmatter=name):
+                index_dir = Path(tempfile.mkdtemp(prefix='private-article-history-index-', dir=self.repo/'.history'))
+                index_env = dict(ENV, GIT_INDEX_FILE=str(index_dir/'index'))
+                command = ['git', '-C', str(self.repo)]
+                subprocess.check_output([*command, 'read-tree', clean_tree], env=index_env, stderr=subprocess.PIPE)
+                blob = subprocess.check_output([*command, 'hash-object', '-w', '--stdin'],
+                                               input=content.encode(), env=ENV).decode().strip()
+                subprocess.check_output([*command, 'update-index', '--add', '--cacheinfo', '100644', blob, name],
+                                       env=index_env, stderr=subprocess.PIPE)
+                private_tree = subprocess.check_output([*command, 'write-tree'], env=index_env, stderr=subprocess.PIPE).decode().strip()
+                old = self.candidate(private_tree, [BASE])
+                current = self.candidate(clean_tree, [old])
+                result = self.prepare()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('previous source release contains unpublished article source', result.stdout+result.stderr)
+                self.assertEqual(self.run_git('rev-parse', 'source').strip(), current)
+                self.assertEqual((self.repo/name).read_text(), content)
+
+    def test_includes_article_and_its_upload_after_explicit_publication(self):
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        name = 'source/_posts/hidden-wrapped.md'
+        published = self.hidden_posts[name].replace('published: false', 'published: true')
+        self.write(name, published)
+        self.run_git('add', name)
+        self.run_git('commit', '-m', 'Publish reviewed fixture article')
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        files = self.run_git('ls-tree', '-r', '--name-only', 'source').splitlines()
+        self.assertIn(name, files)
+        self.assertIn('source/images/uploads/wrapped-private.png', files)
+        self.assertIn('source/images/uploads/shared.png', files)
+        self.assertNotIn('source/_posts/hidden-legacy.md', files)
+        self.assertNotIn('source/images/uploads/legacy-private.png', files)
+        self.assertNotIn('source/_drafts/private.md', files)
+        self.assertNotIn('source/images/uploads/draft-only.png', files)
+        self.assertEqual(self.run_git('show', 'source:'+name), published)
+        self.assertEqual((self.repo/name).read_text(), published)
+        self.assertEqual((self.repo/'source/_posts/hidden-legacy.md').read_text(), self.hidden_posts['source/_posts/hidden-legacy.md'])
 
     def test_rejects_signature_before_matching_tree_shortcut(self):
         self.assertEqual(self.prepare().returncode, 0)

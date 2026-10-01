@@ -19,10 +19,11 @@ def private_path(name):
 def git(*args, data=None):
     return subprocess.check_output(['git', '-C', str(root), *args], input=data)
 
-def public_uploads(revision):
+def publication(revision):
     helper = root/'lib/public-assets.cjs'
-    result = subprocess.check_output(['node', str(helper), '--git-tree', revision], cwd=root)
-    return set(json.loads(result))
+    result = subprocess.check_output(['node', str(helper), '--git-tree-publication', revision], cwd=root)
+    metadata = json.loads(result)
+    return set(metadata['uploads']), set(metadata['private_posts'])
 
 if git('status', '--porcelain').strip():
     raise SystemExit('Commit the reviewed work on its feature branch first; no source branch was changed.')
@@ -45,7 +46,9 @@ for line in git('rev-list', '--parents', f'{published}..{parent}').decode().spli
     previous_paths = git('ls-tree', '-rz', '--full-tree', previous_commit).split(b'\0')
     if any(private_path(item.split(b'\t', 1)[1].decode()) for item in previous_paths if item):
         raise SystemExit('A previous source release contains private files; review its history before proceeding.')
-    previous_uploads = public_uploads(previous_commit)
+    previous_uploads, previous_private_posts = publication(previous_commit)
+    if previous_private_posts:
+        raise SystemExit('A previous source release contains unpublished article source; review its history before proceeding.')
     if any(item.split(b'\t', 1)[1].decode().startswith('source/images/uploads/')
            and item.split(b'\t', 1)[1].decode() not in previous_uploads for item in previous_paths if item):
         raise SystemExit('A previous source release contains unpublished uploads; review its history before proceeding.')
@@ -53,13 +56,13 @@ subprocess.run(['python3',str(checker),'history','--repo',str(root),'--revision'
 
 tree = {}
 excluded = []
-allowed_uploads = public_uploads(source)
+allowed_uploads, private_posts = publication(source)
 for entry in git('ls-tree', '-rz', '--full-tree', source).split(b'\0'):
     if not entry:
         continue
     info, name = entry.split(b'\t', 1)
     text = name.decode()
-    if private_path(text) or (text.startswith('source/images/uploads/') and text not in allowed_uploads):
+    if private_path(text) or text in private_posts or (text.startswith('source/images/uploads/') and text not in allowed_uploads):
         excluded.append(text)
         continue
     mode, kind, sha = info.split()
