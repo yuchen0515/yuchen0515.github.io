@@ -9,6 +9,10 @@ export class WriterError extends Error {
 
 export const versionOf = (text) => createHash('sha256').update(text).digest('hex');
 const imageTypes = { 'image/png': '.png', 'image/jpeg': '.jpg', 'image/webp': '.webp', 'image/gif': '.gif' };
+const editablePages = new Map([
+  ['pages/about/index.md', { name: '個人介紹', parts: ['source', 'about', 'index.md'] }],
+  ['pages/links/index.md', { name: '推薦連結', parts: ['source', 'links', 'index.md'] }],
+]);
 
 function segments(relative) {
   if (typeof relative !== 'string' || relative.length > 320 || relative.includes('\\') || relative.includes('\0') || path.isAbsolute(relative)) {
@@ -21,7 +25,9 @@ function segments(relative) {
 
 export function documentParts(id) {
   const parts = segments(id);
-  if (!['posts', 'drafts'].includes(parts[0]) || parts.length < 2 || !parts.at(-1).endsWith('.md')) throw new WriterError(400, '只能編輯文章與草稿的 Markdown 檔。');
+  const page = editablePages.get(id);
+  if (page) return [...page.parts];
+  if (!['posts', 'drafts'].includes(parts[0]) || parts.length < 2 || !parts.at(-1).endsWith('.md')) throw new WriterError(400, '只能編輯文章、草稿、個人介紹與推薦連結的 Markdown 檔。');
   return ['source', parts[0] === 'posts' ? '_posts' : '_drafts', ...parts.slice(1)];
 }
 
@@ -71,6 +77,15 @@ export class WriterStore {
 
   async list() {
     const documents = [];
+    for (const [id, page] of editablePages) {
+      try {
+        const file = await this.checked(page.parts);
+        const stat = await fs.lstat(file);
+        if (stat.isFile() && !stat.isSymbolicLink()) documents.push({ id, name: page.name, kind: 'pages' });
+      } catch (error) {
+        if (![400, 404].includes(error.status) && error.code !== 'ENOENT') throw error;
+      }
+    }
     for (const [kind, folder] of [['drafts', '_drafts'], ['posts', '_posts']]) {
       let base;
       try { base = await this.checked(['source', folder, '_listing']); }
@@ -146,12 +161,13 @@ export class WriterStore {
     return { path: `/images/uploads/${name}`, name };
   }
 
-  async image(relative) {
+  async image(relative, { page } = {}) {
+    if (page !== undefined && !['about', 'links'].includes(page)) throw new WriterError(400, '圖片所在頁面不正確。');
     const parts = segments(relative);
     const extension = path.extname(parts.at(-1)).toLowerCase();
     const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif' }[extension];
     if (!mime) throw new WriterError(404, '找不到圖片。');
-    const file = await this.checked(['source', 'images', ...parts]);
+    const file = await this.checked(page ? ['source', page, 'images', ...parts] : ['source', 'images', ...parts]);
     let handle;
     try {
       handle = await fs.open(file, constants.O_RDONLY | constants.O_NOFOLLOW);

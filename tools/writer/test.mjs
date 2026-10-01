@@ -6,6 +6,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WriterError, WriterStore, previewParts, versionOf } from './storage.mjs';
 import { createWriterServer } from './server.mjs';
+import { load } from 'cheerio';
+import { renderMarkdown as renderPublishedMarkdown } from '../../lib/markdown.cjs';
 
 const fixtures = path.join(path.dirname(fileURLToPath(import.meta.url)), '.fixtures');
 const original = '---\ntitle: 測試文章\ndate: 2026-10-01 08:00:00\n---\n\n原始文字\n';
@@ -21,9 +23,31 @@ async function fixture() {
   return { root, store };
 }
 
-async function withServer(context) {
+async function pageFixture() {
   const fixtureData = await fixture();
-  const service = await createWriterServer({ projectRoot: fixtureData.root, renderMarkdown: (body) => `<p>${body}</p>` });
+  const pages = [
+    { id: 'pages/about/index.md', folder: 'about', name: '個人介紹', content: '---\ntitle: 個人介紹\n---\n\n<!-- LANG:ZH START -->\n原始介紹 <span>完整保留</span>\n<!-- LANG:ZH END -->\n<!-- LANG:EN START -->\nOriginal introduction.\n<!-- LANG:EN END -->\n' },
+    { id: 'pages/links/index.md', folder: 'links', name: '推薦連結', content: '---\ntitle: 推薦連結\n---\n\n[原有連結](https://example.com/)\n' },
+  ];
+  for (const page of pages) {
+    await fs.mkdir(path.join(fixtureData.root, 'source', page.folder), { recursive: true });
+    await fs.writeFile(path.join(fixtureData.root, 'source', page.folder, 'index.md'), page.content);
+  }
+  return { ...fixtureData, pages };
+}
+
+async function pageImageFixture() {
+  const data = await pageFixture();
+  for (const page of data.pages) {
+    await fs.mkdir(path.join(data.root, 'source', page.folder, 'images'));
+    await fs.writeFile(path.join(data.root, 'source', page.folder, 'images', '原圖.png'), png);
+  }
+  return data;
+}
+
+async function withServer(context, fixtureFactory = fixture, renderMarkdown = (body) => `<p>${body}</p>`) {
+  const fixtureData = await fixtureFactory();
+  const service = await createWriterServer({ projectRoot: fixtureData.root, renderMarkdown });
   await new Promise((resolve, reject) => {
     service.server.once('error', reject);
     service.server.listen(0, '127.0.0.1', () => { service.server.off('error', reject); resolve(); });
@@ -151,4 +175,162 @@ test('preview uses the production renderer contract and images load in a script-
   assert.deepEqual(Buffer.from(await image.arrayBuffer()), png);
   assert.equal((await json('/api/preview', 'POST', { content: 'a'.repeat(2 * 1024 * 1024 + 1) })).status, 413);
   assert.equal((await request('/preview-style.css')).status, 200);
+});
+
+
+test('About and Links are listed as pages and preserve exact preimages and stale-version protection', async () => {
+  const { root, store, pages } = await pageFixture();
+  const library = await store.list();
+  assert.deepEqual(library.filter((item) => item.kind === 'pages'), pages.map(({ id, name }) => ({ id, name, kind: 'pages' })));
+  assert.ok(library.some((item) => item.id === 'posts/文章.md'));
+  for (const page of pages) {
+    const before = await store.read(page.id);
+    assert.equal(before.content, page.content);
+    const next = `${before.content}\n![貼上的圖片](/images/uploads/example.png)\n`;
+    const saved = await store.save(page.id, next, before.version);
+    assert.equal(saved.content, next);
+    assert.equal(await fs.readFile(path.join(root, 'source', page.folder, 'index.md'), 'utf8'), next);
+    const directory = path.join(root, '.history', 'writer', 'pages', versionOf(page.id).slice(0, 16));
+    const names = await fs.readdir(directory);
+    assert.equal(names.filter((name) => name.endsWith('.md')).length, 1);
+    assert.equal(await fs.readFile(path.join(directory, names.find((name) => name.endsWith('.md'))), 'utf8'), page.content);
+    const receipt = JSON.parse(await fs.readFile(path.join(directory, names.find((name) => name.endsWith('.json'))), 'utf8'));
+    assert.equal(receipt.id, page.id);
+    assert.equal(receipt.version, before.version);
+    await assert.rejects(store.save(page.id, '舊版本不應覆寫', before.version), { status: 409 });
+    assert.equal((await store.read(page.id)).content, next);
+    await store.save(page.id, next, saved.version);
+    assert.equal((await fs.readdir(directory)).length, names.length);
+    assert.equal((await fs.readdir(path.join(root, 'source', page.folder))).some((name) => name.startsWith('.writer-')), false);
+  }
+  assert.equal((await store.read('posts/文章.md')).content, original);
+});
+
+test('pages use a fixed allowlist and cannot expose configuration, other pages or symbolic links', async () => {
+  const { root, store } = await pageFixture();
+  await fs.mkdir(path.join(root, 'source', 'private'), { recursive: true });
+  await fs.writeFile(path.join(root, 'source', 'private', 'index.md'), '其他頁面不開放');
+  await fs.writeFile(path.join(root, 'source', 'about', 'old.md'), '舊版介紹不開放');
+  for (const id of ['pages/private/index.md', 'pages/about.md', 'pages/links.md', 'pages/about/old.md', 'pages/about/index.md/extra.md', 'pages/about/../links/index.md', 'pages/about/%2e%2e/links/index.md', 'pages/_config.yml', 'pages/../_config.yml', 'source/about/index.md']) {
+    await assert.rejects(store.read(id), { status: 400 });
+    await assert.rejects(store.save(id, '不能寫入', versionOf('')), { status: 400 });
+  }
+  assert.equal((await store.list()).filter((item) => item.kind === 'pages').length, 2);
+  const outsideFile = path.join(root, 'outside.md');
+  await fs.writeFile(outsideFile, '不可讀寫的外部原文');
+  await fs.rename(path.join(root, 'source', 'about', 'index.md'), path.join(root, 'source', 'about', 'preserved-original.md'));
+  await fs.symlink(outsideFile, path.join(root, 'source', 'about', 'index.md'));
+  await assert.rejects(store.read('pages/about/index.md'), { status: 400 });
+  await assert.rejects(store.save('pages/about/index.md', '不能寫入', versionOf('不可讀寫的外部原文')), { status: 400 });
+  const outsideDirectory = path.join(root, 'outside-directory');
+  await fs.mkdir(outsideDirectory);
+  await fs.writeFile(path.join(outsideDirectory, 'index.md'), '不可讀寫的外部頁面');
+  await fs.rename(path.join(root, 'source', 'links'), path.join(root, 'source', 'preserved-links'));
+  await fs.symlink(outsideDirectory, path.join(root, 'source', 'links'));
+  await assert.rejects(store.read('pages/links/index.md'), { status: 400 });
+  await assert.rejects(store.save('pages/links/index.md', '不能寫入', versionOf('不可讀寫的外部頁面')), { status: 400 });
+  assert.equal((await store.list()).some((item) => item.kind === 'pages'), false);
+  assert.equal((await store.read('posts/文章.md')).content, original);
+  assert.equal(await fs.readFile(outsideFile, 'utf8'), '不可讀寫的外部原文');
+  assert.equal(await fs.readFile(path.join(outsideDirectory, 'index.md'), 'utf8'), '不可讀寫的外部頁面');
+  const missing = await fixture();
+  assert.equal((await missing.store.list()).some((item) => item.kind === 'pages'), false);
+  await assert.rejects(missing.store.read('pages/about/index.md'), { status: 404 });
+  assert.equal((await fs.readdir(path.join(missing.root, 'source'))).includes('about'), false);
+});
+
+test('the existing HTTP document API edits both allowed pages and rejects concurrent stale saves', async (context) => {
+  const { root, pages, request, json, store } = await withServer(context, pageFixture);
+  const library = await (await request('/api/library')).json();
+  assert.deepEqual(library.documents.filter((item) => item.kind === 'pages'), pages.map(({ id, name }) => ({ id, name, kind: 'pages' })));
+  for (const page of pages) {
+    const response = await request('/api/document?id=' + encodeURIComponent(page.id));
+    assert.equal(response.status, 200);
+    const before = await response.json();
+    const candidates = [`${page.content}\n修訂 A\n`, `${page.content}\n修訂 B\n`];
+    const saves = await Promise.all(candidates.map((content) => json('/api/document', 'PUT', { id: page.id, content, version: before.version })));
+    assert.deepEqual(saves.map((save) => save.status).sort(), [200, 409]);
+    assert.ok(candidates.includes((await store.read(page.id)).content));
+  }
+  for (const id of ['pages/private/index.md', 'pages/about/other.md', 'pages/_config.yml']) {
+    assert.equal((await request('/api/document?id=' + encodeURIComponent(id))).status, 400);
+    assert.equal((await json('/api/document', 'PUT', { id, content: '拒絕', version: versionOf('') })).status, 400);
+  }
+  const post = await (await request('/api/document?id=' + encodeURIComponent('posts/文章.md'))).json();
+  assert.equal((await json('/api/document', 'PUT', { id: post.id, content: original + '\n文章仍可儲存\n', version: post.version })).status, 200);
+  const draft = await json('/api/drafts', 'POST', { title: '頁面之外的草稿' });
+  assert.equal(draft.status, 201);
+  assert.equal((await draft.json()).id, 'drafts/頁面之外的草稿.md');
+  assert.deepEqual((await fs.readdir(path.join(root, 'source'))).sort(), ['_drafts', '_posts', 'about', 'links']);
+});
+
+
+test('page previews resolve their real relative image files and retain absolute uploads and external images', async (context) => {
+  const { pages, store, json, origin } = await withServer(context, pageImageFixture, renderPublishedMarkdown);
+  const uploaded = await store.saveImage(png, 'image/png');
+  const dataImage = 'data:image/png;base64,' + png.toString('base64');
+  const content = `---\ntitle: 圖片預覽\n---\n\n![相對圖片](images/原圖.png?width=24#detail)\n\n![編碼圖片](./images/%E5%8E%9F%E5%9C%96.png)\n\n[圖片連結](images/原圖.png?download=1#picture)\n\n[文件連結](images/guide.html)\n\n![貼上圖片](${uploaded.path})\n\n![外部圖片](https://example.com/photo.png)\n\n<img src="${dataImage}" alt="內嵌圖片">\n`;
+  for (const page of pages) {
+    const response = await json('/api/preview', 'POST', {id: page.id, content});
+    assert.equal(response.status, 200);
+    const preview = await response.json();
+    const $ = load(preview.html);
+    assert.equal($('img[alt="相對圖片"]').attr('src'), `/${page.folder}/images/%E5%8E%9F%E5%9C%96.png?width=24#detail`);
+    assert.equal($('img[alt="編碼圖片"]').attr('src'), `/${page.folder}/images/%E5%8E%9F%E5%9C%96.png`);
+    assert.equal($('a').filter((_, el) => $(el).text() === '圖片連結').attr('href'), `/${page.folder}/images/%E5%8E%9F%E5%9C%96.png?download=1#picture`);
+    assert.equal($('a').filter((_, el) => $(el).text() === '文件連結').attr('href'), 'images/guide.html');
+    assert.equal($('img[alt="貼上圖片"]').attr('src'), uploaded.path);
+    assert.equal($('img[alt="外部圖片"]').attr('src'), 'https://example.com/photo.png');
+    assert.equal($('img[alt="內嵌圖片"]').attr('src'), dataImage);
+    for (const relative of [`/${page.folder}/images/${encodeURIComponent('原圖.png')}?width=24`, `/${page.folder}/images/%E5%8E%9F%E5%9C%96.png`, uploaded.path]) {
+      const image = await fetch(origin + relative, {headers: {Origin: 'null', 'Sec-Fetch-Site': 'cross-site'}});
+      assert.equal(image.status, 200);
+      assert.equal(image.headers.get('content-type'), 'image/png');
+      assert.equal(image.headers.get('cross-origin-resource-policy'), 'cross-origin');
+      assert.equal(image.headers.get('x-content-type-options'), 'nosniff');
+      assert.deepEqual(Buffer.from(await image.arrayBuffer()), png);
+    }
+    assert.equal((await store.read(page.id)).content, page.content, 'preview never rewrites the authored Markdown');
+  }
+  const draft = await store.createDraft('圖片草稿');
+  for (const id of [undefined, 'posts/文章.md', draft.id]) {
+    const preview = await (await json('/api/preview', 'POST', {id, content})).json();
+    assert.equal(load(preview.html)('img[alt="相對圖片"]').attr('src'), 'images/%E5%8E%9F%E5%9C%96.png?width=24#detail');
+    assert.equal(load(preview.html)('img[alt="貼上圖片"]').attr('src'), uploaded.path);
+  }
+});
+
+test('preview document context rejects malformed or unapproved page IDs before rendering', async (context) => {
+  let renders = 0;
+  const {json} = await withServer(context, pageFixture, (body) => { renders++; return body; });
+  for (const id of ['pages/private/index.md', 'pages/about/other.md', 'pages/about/../links/index.md', 'source/about/index.md', '../source/_drafts/private.md', null, {}, 'pages/about/index.md\0']) {
+    assert.equal((await json('/api/preview', 'POST', {id, content: '不可解析其他路徑'})).status, 400);
+  }
+  assert.equal(renders, 0);
+  assert.equal((await json('/api/preview', 'POST', {id: 'pages/about/index.md', content: '可以預覽'})).status, 200);
+  assert.equal(renders, 1);
+});
+
+test('page image routes reject traversal, non-image files, symlinks and oversized files', async (context) => {
+  const {root, request, store} = await withServer(context, pageImageFixture);
+  for (const route of ['/about/images/%2e%2e%2findex.md', '/about/images/%2e%2e%5cindex.md', '/links/images/%00.png', '/about/images/%2foutside.png', '/links/images/%ZZ.png']) {
+    assert.equal((await request(route)).status, 400, route);
+  }
+  assert.equal((await request('/private/images/原圖.png')).status, 404);
+  assert.equal((await request('/about/images/missing.png')).status, 404);
+  for (const name of ['private.md', 'unsafe.svg', 'document.html']) {
+    await fs.writeFile(path.join(root, 'source', 'about', 'images', name), '<script>private()</script>');
+    assert.equal((await request('/about/images/' + name)).status, 404);
+  }
+  const outside = path.join(root, 'outside.png');
+  await fs.writeFile(outside, png);
+  await fs.symlink(outside, path.join(root, 'source', 'about', 'images', 'linked.png'));
+  assert.equal((await request('/about/images/linked.png')).status, 400);
+  await fs.rename(path.join(root, 'source', 'links', 'images'), path.join(root, 'source', 'links', 'preserved-images'));
+  await fs.symlink(path.join(root, 'source', 'about', 'images'), path.join(root, 'source', 'links', 'images'));
+  assert.equal((await request('/links/images/原圖.png')).status, 400);
+  await fs.writeFile(path.join(root, 'source', 'about', 'images', 'large.png'), Buffer.alloc(20 * 1024 * 1024 + 1));
+  assert.equal((await request('/about/images/large.png')).status, 413);
+  await assert.rejects(store.image('原圖.png', {page: 'private'}), {status: 400});
+  assert.deepEqual(await fs.readFile(outside), png);
 });

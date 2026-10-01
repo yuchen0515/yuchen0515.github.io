@@ -7,3 +7,6 @@
 @media(max-width:360px){.header-inner{height:auto;min-height:80px;gap:6px;padding:16px 20px}.wordmark{width:100%;margin-bottom:6px}.site-nav{margin-left:0;margin-right:auto}.home-intro h1{font-size:32px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 @media print{.site-header,.site-footer,.article-aside,.engagement,.article-tags,.post-navigation,.back-link,.language-switch,.code-copy{display:none!important}body{background:white;color:black}.article-layout,.site-main{display:block;max-width:none;padding:0}.prose{font-size:11pt}.prose pre{white-space:pre-wrap}a{color:black}.article-header{margin:0 0 20px}.article-header h1{font-size:23pt}.table-scroll{overflow:visible}}
+
+/* Keep the current three-column ranks readable without horizontal scrolling. */
+@media(max-width:520px){.codingame-ranks .table-scroll{overflow:visible}.codingame-ranks table{table-layout:fixed;min-width:0;width:100%}.codingame-ranks th,.codingame-ranks td{padding:10px 8px;min-width:0;white-space:normal;overflow-wrap:anywhere;vertical-align:top}.codingame-ranks th:first-child{width:36%}.codingame-ranks th:nth-child(2){width:30%}.codingame-ranks th:nth-child(3){width:34%}}

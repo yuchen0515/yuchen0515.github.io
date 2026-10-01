@@ -3,7 +3,8 @@ import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
-import { WriterError, WriterStore, previewParts } from './storage.mjs';
+import { load } from 'cheerio';
+import { WriterError, WriterStore, documentParts, previewParts } from './storage.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const staticFiles = new Map([
@@ -13,6 +14,19 @@ const staticFiles = new Map([
 ]);
 
 const escapeHTML = (text) => String(text).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+
+function pageImageURLs(html, page) {
+  if (!page) return html;
+  const $ = load(html, null, false);
+  $('img[src], a[href]').each((_, element) => {
+    const attribute = element.tagName === 'img' ? 'src' : 'href';
+    const value = $(element).attr(attribute);
+    const relative = value?.match(/^(?:\.\/)?images\/(.+)$/);
+    if (!relative || (attribute === 'href' && !/\.(?:png|jpe?g|webp|gif)(?:[?#]|$)/i.test(relative[1]))) return;
+    $(element).attr(attribute, `/${page}/images/${relative[1]}`);
+  });
+  return $.html();
+}
 
 async function body(request, limit) {
   if (Number(request.headers['content-length']) > limit) throw new WriterError(413, '內容太大，請縮小檔案後再試。');
@@ -65,7 +79,8 @@ export async function createWriterServer({ projectRoot = path.resolve(here, '../
       if (![`127.0.0.1:${port}`, `localhost:${port}`].includes(request.headers.host)) throw new WriterError(403, '請從本機寫作工具網址開啟。');
       const url = new URL(request.url, origins[0]);
       const fontMatch = url.pathname.match(/^\/vendor\/fonts\/(KaTeX_[A-Za-z0-9_-]+\.woff2)$/);
-      const publicAsset = staticFiles.has(url.pathname) || url.pathname === '/preview-style.css' || url.pathname === '/vendor/katex.min.css' || Boolean(fontMatch) || url.pathname === '/font/JetBrainsMono-Regular.woff2' || url.pathname.startsWith('/images/');
+      const pageImage = url.pathname.match(/^\/(about|links)\/images\/(.+)$/);
+      const publicAsset = Boolean(pageImage) || staticFiles.has(url.pathname) || url.pathname === '/preview-style.css' || url.pathname === '/vendor/katex.min.css' || Boolean(fontMatch) || url.pathname === '/font/JetBrainsMono-Regular.woff2' || url.pathname.startsWith('/images/');
       if (!publicAsset && request.headers.origin && !origins.includes(request.headers.origin)) throw new WriterError(403, '這個請求不是來自寫作工具。');
       if (!publicAsset && request.headers['sec-fetch-site'] === 'cross-site') throw new WriterError(403, '這個請求不是來自寫作工具。');
       if (publicAsset) response.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -90,8 +105,10 @@ export async function createWriterServer({ projectRoot = path.resolve(here, '../
         if (url.pathname === '/api/preview' && request.method === 'POST') {
           const input = await jsonBody(request);
           if (typeof input.content !== 'string' || Buffer.byteLength(input.content) > 2 * 1024 * 1024) throw new WriterError(413, '文章太大，無法預覽。');
+          const context = input.id === undefined ? null : documentParts(input.id);
+          const page = input.id?.startsWith('pages/') ? context[1] : null;
           const { title, titleEn, body: markdown } = previewParts(input.content);
-          try { return send(200, { title, titleEn, html: await renderMarkdown(markdown) }); }
+          try { return send(200, { title, titleEn, html: pageImageURLs(await renderMarkdown(markdown), page) }); }
           catch (error) {
             if (/雙語標記|雙語區塊/.test(error.message)) throw new WriterError(422, error.message);
             throw error;
@@ -122,11 +139,11 @@ export async function createWriterServer({ projectRoot = path.resolve(here, '../
         response.setHeader('Access-Control-Allow-Origin', '*');
         return send(200, await fs.readFile(file), url.pathname.endsWith('.css') ? 'text/css; charset=utf-8' : 'font/woff2');
       }
-      if (url.pathname.startsWith('/images/')) {
+      if (pageImage || url.pathname.startsWith('/images/')) {
         let relative;
-        try { relative = decodeURIComponent(url.pathname.slice('/images/'.length)); }
+        try { relative = decodeURIComponent(pageImage ? pageImage[2] : url.pathname.slice('/images/'.length)); }
         catch { throw new WriterError(400, '圖片路徑不正確。'); }
-        const image = await store.image(relative);
+        const image = await store.image(relative, pageImage ? { page: pageImage[1] } : {});
         return send(200, image.bytes, image.mime);
       }
       throw new WriterError(404, '找不到這個頁面。');

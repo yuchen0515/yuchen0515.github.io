@@ -1,7 +1,12 @@
 const $ = (id) => document.getElementById(id);
 const token = document.querySelector('meta[name="writer-token"]').content;
 const editor = $('editor');
-const state = { id: null, version: null, saved: '', documents: [], saving: false, opening: 0 };
+const state = { id: null, version: null, saved: '', documents: [], saving: false, opening: 0, generation: 0 };
+const imageAnchors = new Set();
+let editorSnapshot = '';
+let editorInput = null;
+let imageQueue = Promise.resolve();
+let copiedImageMarkdown = '';
 let previewTimer;
 let previewController;
 let previewNumber = 0;
@@ -199,10 +204,17 @@ function showError(message) { $('error').textContent = message; $('error').hidde
 function clearError() { $('error').hidden = true; }
 function setStatus(message) { $('status').textContent = message; }
 function updateDirty() {
-  $('save').disabled = !state.id || !dirty() || state.saving;
+  const addingImages = imageAnchors.size > 0;
+  $('save').disabled = !state.id || !dirty() || state.saving || addingImages;
+  $('attach-image').disabled = $('paste-image').disabled = !state.id || addingImages || state.saving;
+  if (addingImages) { setStatus('正在加入圖片，文字仍可編輯…'); return; }
   if (!state.saving) setStatus(dirty() ? '尚有未儲存的修改。' : state.id ? '已儲存在本機。' : '文章與圖片保留在你的本機。');
 }
-function canLeave() { return !dirty() || window.confirm('目前有尚未儲存的修改。確定離開這篇文章？'); }
+function canLeave() {
+  if (state.saving) { setStatus('正在儲存，完成後即可切換文件。'); return false; }
+  if (imageAnchors.size) { setStatus('圖片尚在加入中，完成後即可切換文件。'); return false; }
+  return !dirty() || window.confirm('目前有尚未儲存的修改。確定離開這份文件？');
+}
 
 async function api(endpoint, { method = 'GET', data, file, signal } = {}) {
   const headers = { 'X-Writer-Token': token };
@@ -221,7 +233,7 @@ function drawLibrary() {
   const target = $('library');
   target.replaceChildren();
   const filter = $('filter').value.trim().toLocaleLowerCase();
-  for (const [kind, heading] of [['drafts', '草稿'], ['posts', '文章']]) {
+  for (const [kind, heading] of [['pages', '網站頁面'], ['drafts', '草稿'], ['posts', '文章']]) {
     const documents = state.documents.filter((item) => item.kind === kind && item.name.toLocaleLowerCase().includes(filter));
     const section = document.createElement('section');
     const h2 = document.createElement('h2'); h2.textContent = `${heading} · ${documents.length}`; section.append(h2);
@@ -235,7 +247,7 @@ function drawLibrary() {
       li.append(button); list.append(li);
     }
     if (documents.length) section.append(list);
-    else { const empty = document.createElement('p'); empty.className = 'quiet'; empty.textContent = filter ? '沒有符合的文章。' : kind === 'drafts' ? '還沒有草稿。' : '還沒有文章。'; section.append(empty); }
+    else { const empty = document.createElement('p'); empty.className = 'quiet'; empty.textContent = filter ? '沒有符合的文件。' : kind === 'pages' ? '尚未有可編輯頁面。' : kind === 'drafts' ? '還沒有草稿。' : '還沒有文章。'; section.append(empty); }
     target.append(section);
   }
 }
@@ -250,10 +262,13 @@ function selectDocument(result) {
   scrollSync.driver = 'editor';
   scrollSync.points = []; scrollSync.tops = { editor: 0, preview: 0 };
   state.id = result.id; state.version = result.version; state.saved = result.content;
+  state.generation += 1;
+  editorInput = null; editorSnapshot = result.content; copiedImageMarkdown = ''; $('image-result').hidden = true;
   editor.value = result.content; editor.scrollTop = 0; editor.disabled = false;
   $('attach-image').disabled = false;
-  $('kind').textContent = result.id.startsWith('drafts/') ? '草稿' : '文章';
-  $('document-name').textContent = result.id.split('/').slice(1).join('/');
+  const document = state.documents.find((item) => item.id === result.id);
+  $('kind').textContent = result.id.startsWith('pages/') ? '網站頁面' : result.id.startsWith('drafts/') ? '草稿' : '文章';
+  $('document-name').textContent = document?.name || result.id.split('/').slice(1).join('/');
   clearError(); updateDirty(); drawLibrary(); schedulePreview();
   editor.focus();
 }
@@ -268,7 +283,7 @@ async function openDocument(id) {
 }
 
 async function save() {
-  if (!state.id || !dirty() || state.saving) return;
+  if (!state.id || !dirty() || state.saving || imageAnchors.size) return;
   state.saving = true; updateDirty(); clearError(); setStatus('正在儲存…');
   const id = state.id; const content = editor.value; const version = state.version;
   try {
@@ -276,7 +291,7 @@ async function save() {
     if (state.id === id) { state.saved = content; state.version = result.version; }
     setStatus(`已儲存 · ${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`);
   } catch (error) { showError(error.message); setStatus('尚未儲存，編輯內容仍保留在畫面。'); }
-  finally { state.saving = false; $('save').disabled = !state.id || !dirty(); if (dirty()) setStatus('尚有未儲存的修改。'); }
+  finally { state.saving = false; updateDirty(); }
 }
 
 function previewDocument(title, html) {
@@ -293,7 +308,7 @@ function schedulePreview() {
   previewTimer = setTimeout(async () => {
     previewController = new AbortController();
     try {
-      const result = await api('/api/preview', { method: 'POST', data: { content: editor.value }, signal: previewController.signal });
+      const result = await api('/api/preview', { method: 'POST', data: { id: state.id, content: editor.value }, signal: previewController.signal });
       if (number === previewNumber) {
         const languages = ['zh', 'en'].filter((language) => result.html.includes(`data-language="${language}"`));
         const selector = $('preview-language');
@@ -311,27 +326,135 @@ function schedulePreview() {
   }, 300);
 }
 
-async function insertImages(files) {
-  if (!state.id || !files.length) return;
-  const id = state.id;
-  clearError();
-  for (const file of files) {
-    try {
-      setStatus('正在加入圖片…');
+// Keep the original paste location even if typing or a new selection happens
+// while the local image upload is in progress. Edited selections collapse so
+// a finished upload can never replace text typed after the paste began.
+function trackImageAnchors(skip, change) {
+  const before = editorSnapshot, after = editor.value;
+  if (before === after) return;
+  let start, end, nextEnd;
+  const input = editorInput; editorInput = null;
+  if (!change && input?.before === before) {
+    start = input.start; end = input.end;
+    const removed = before.length - after.length;
+    if (start === end && input.type.startsWith('delete') && removed > 0) {
+      if (input.type.endsWith('Backward')) start -= removed;
+      else if (input.type.endsWith('Forward')) end += removed;
+    }
+    nextEnd = end + after.length - before.length;
+    if (start >= 0 && nextEnd >= start && before.slice(0, start) === after.slice(0, start) && before.slice(end) === after.slice(nextEnd)) change = { start, end, nextEnd };
+  }
+  if (change) ({ start, end, nextEnd } = change);
+  else {
+    start = 0; end = before.length; nextEnd = after.length;
+    while (start < end && start < nextEnd && before[start] === after[start]) start += 1;
+    while (end > start && nextEnd > start && before[end - 1] === after[nextEnd - 1]) { end -= 1; nextEnd -= 1; }
+  }
+  const delta = nextEnd - end;
+  const move = (point) => point < start || point === start && !change?.rightAffinity ? point : point >= end ? point + delta : nextEnd;
+  for (const anchor of imageAnchors) {
+    if (anchor === skip) continue;
+    const intersects = start < anchor.end && end > anchor.start || start === end && start >= anchor.start && start < anchor.end;
+    const position = move(anchor.start);
+    anchor.start = position; anchor.end = intersects ? position : move(anchor.end);
+  }
+  editorSnapshot = after;
+}
+
+function beginImageInsertion() {
+  if (!state.id) return null;
+  if (state.saving) { setStatus('正在儲存，完成後請再貼上圖片。'); return null; }
+  trackImageAnchors();
+  const anchor = { id: state.id, generation: state.generation, start: editor.selectionStart, end: editor.selectionEnd };
+  imageAnchors.add(anchor); clearError(); updateDirty();
+  return anchor;
+}
+
+function finishImageInsertion(anchor) {
+  imageAnchors.delete(anchor); updateDirty();
+}
+
+function clipboardHint(message) {
+  selectTab(false); editor.focus();
+  setStatus(`${message}請在 Markdown 按 ⌘/Ctrl + V，或選擇「加入圖片」。`);
+}
+
+function showImageResult(markdown) {
+  copiedImageMarkdown = markdown;
+  $('image-markdown').value = markdown;
+  $('image-result').hidden = false;
+}
+
+async function insertImages(files, anchor = beginImageInsertion()) {
+  if (!anchor) return;
+  if (!files.length) { finishImageInsertion(anchor); return; }
+  const previous = imageQueue;
+  let release;
+  imageQueue = new Promise((resolve) => { release = resolve; });
+  try {
+    await previous;
+    for (const file of files) {
       if (file.size > 12 * 1024 * 1024) throw new Error('圖片超過 12 MB，請縮小後再加入。');
       const result = await api('/api/images', { method: 'POST', file });
-      if (state.id !== id) { showError(`圖片已保存在 ${result.path}，但文章已切換；請自行加入這個圖片路徑。`); return; }
       const alt = (file.name || '圖片').replace(/\.[^.]+$/, '').replace(/[\[\]\\\r\n]/g, ' ').trim() || '圖片';
-      const insertion = `![${alt}](${result.path})`;
-      const start = editor.selectionStart; const end = editor.selectionEnd;
+      const markdown = `![${alt}](${result.path})`;
+      showImageResult(markdown);
+      if (state.id !== anchor.id || state.generation !== anchor.generation) throw new Error('圖片已保存；請用下方圖片語法加入需要的文件。');
+      trackImageAnchors();
+      const { start, end } = anchor;
       const prefix = start > 0 && editor.value[start - 1] !== '\n' ? '\n\n' : '';
-      editor.setRangeText(`${prefix}${insertion}\n`, start, end, 'end');
+      const text = `${prefix}${markdown}\n`;
+      const originalSelection = editor.selectionStart === start && editor.selectionEnd === end;
+      editor.setRangeText(text, start, end, originalSelection ? 'end' : 'preserve');
+      trackImageAnchors(anchor, { start, end, nextEnd: start + text.length, rightAffinity: true });
+      anchor.start = anchor.end = start + text.length;
       scrollSync.driver = 'editor';
-      updateDirty(); schedulePreview(); editor.focus();
-    } catch (error) { showError(error.message); updateDirty(); return; }
-  }
-  updateDirty();
+      updateDirty(); schedulePreview();
+      const active = document.activeElement;
+      const keepEditing = active === editor || ['paste-image', 'attach-image', 'image-input'].includes(active?.id);
+      if (originalSelection && keepEditing) { selectTab(false); editor.focus(); }
+    }
+  } catch (error) { showError(error.message); }
+  finally { finishImageInsertion(anchor); release(); }
 }
+
+const imageMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+function imageFiles(transfer) {
+  const items = [...(transfer?.items ?? [])].filter((item) => item.kind === 'file').map((item) => item.getAsFile()).filter(Boolean);
+  const files = items.length ? items : [...(transfer?.files ?? [])];
+  return files.filter((file) => imageMimeTypes.includes(file.type) || !file.type && /\.(png|jpe?g|webp|gif)$/i.test(file.name));
+}
+
+$('paste-image').addEventListener('click', async () => {
+  if (!navigator.clipboard?.read) { clipboardHint('瀏覽器未提供剪貼簿讀取。'); return; }
+  const anchor = beginImageInsertion();
+  if (!anchor) return;
+  let handedOff = false;
+  try {
+    // Call read directly within the click gesture; Safari requires this.
+    const items = await navigator.clipboard.read();
+    const files = [];
+    for (const item of items) {
+      const type = imageMimeTypes.find((mime) => item.types.includes(mime));
+      if (type) files.push(await item.getType(type));
+    }
+    if (files.length) { handedOff = true; await insertImages(files, anchor); }
+    else { finishImageInsertion(anchor); clipboardHint('剪貼簿沒有支援的圖片；請先複製截圖或右鍵「複製圖片」。'); }
+  } catch {
+    finishImageInsertion(anchor); clipboardHint('尚未取得剪貼簿圖片。');
+  } finally { if (!handedOff) imageAnchors.delete(anchor); }
+});
+
+$('copy-image-markdown').addEventListener('click', async () => {
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText(copiedImageMarkdown);
+    setStatus('已複製圖片語法，可貼進其他文章或頁面。');
+  } catch {
+    $('image-markdown').focus(); $('image-markdown').select();
+    setStatus('圖片語法已選取，請按 ⌘/Ctrl + C 複製。');
+  }
+});
 
 $('save').addEventListener('click', save);
 $('filter').addEventListener('input', drawLibrary);
@@ -344,18 +467,28 @@ $('reload-library').addEventListener('click', async () => {
   finally { $('reload-library').disabled = false; }
 });
 $('preview-language').addEventListener('change', schedulePreview);
-editor.addEventListener('input', () => { scrollSync.driver = 'editor'; updateDirty(); schedulePreview(); });
+editor.addEventListener('beforeinput', (event) => { editorInput = { before: editor.value, start: editor.selectionStart, end: editor.selectionEnd, type: event.inputType || '' }; });
+editor.addEventListener('input', () => { trackImageAnchors(); scrollSync.driver = 'editor'; updateDirty(); schedulePreview(); });
 editor.addEventListener('paste', (event) => {
-  const images = [...(event.clipboardData?.items ?? [])].filter((item) => item.kind === 'file' && item.type.startsWith('image/')).map((item) => item.getAsFile()).filter(Boolean);
+  const images = imageFiles(event.clipboardData);
   if (images.length) { event.preventDefault(); insertImages(images); }
 });
 editor.addEventListener('dragover', (event) => { if ([...(event.dataTransfer?.types ?? [])].includes('Files')) { event.preventDefault(); document.body.classList.add('drop-active'); } });
 editor.addEventListener('dragleave', () => document.body.classList.remove('drop-active'));
-editor.addEventListener('drop', (event) => { event.preventDefault(); document.body.classList.remove('drop-active'); insertImages([...event.dataTransfer.files]); });
+editor.addEventListener('drop', (event) => {
+  document.body.classList.remove('drop-active');
+  const images = imageFiles(event.dataTransfer);
+  const hasFiles = [...(event.dataTransfer?.types ?? [])].includes('Files');
+  if (hasFiles || images.length) {
+    event.preventDefault();
+    if (images.length) insertImages(images);
+    else showError('請拖入 PNG、JPEG、WebP 或 GIF 圖片；SVG 與其他檔案不支援。');
+  }
+});
 $('attach-image').addEventListener('click', () => $('image-input').click());
 $('image-input').addEventListener('change', (event) => { insertImages([...event.target.files]); event.target.value = ''; });
 window.addEventListener('keydown', (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') { event.preventDefault(); save(); } });
-window.addEventListener('beforeunload', (event) => { if (dirty()) { event.preventDefault(); event.returnValue = ''; } });
+window.addEventListener('beforeunload', (event) => { if (dirty() || imageAnchors.size) { event.preventDefault(); event.returnValue = ''; } });
 
 const dialog = $('draft-dialog');
 $('new-draft').addEventListener('click', () => { if (!canLeave()) return; $('draft-error').hidden = true; $('draft-title').value = ''; dialog.showModal(); $('draft-title').focus(); });

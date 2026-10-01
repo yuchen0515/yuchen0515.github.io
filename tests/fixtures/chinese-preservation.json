@@ -1,26 +1,39 @@
 [
   {
     "path": "source/_posts/MIRlab-owen-lin-RD-page.md",
-    "zhSha256": "a367440c979bf7961d05e77477a6ce08739c7724e94be6190b7ac0eca08f9271"
+    "zhSha256": "a367440c979bf7961d05e77477a6ce08739c7724e94be6190b7ac0eca08f9271",
+    "snapshotPath": "tests/fixtures/editorial-20261002/MIRlab-owen-lin-RD-page.md",
+    "snapshotSha256": "26b3c2a9954efbb7f35af30c8892d3e7d550a31f44d95070a37ed7b91e2c1665"
   },
   {
     "path": "source/_posts/賽後心得-「看見你的聲音-語音辨識後修正」.md",
-    "zhSha256": "0ce7f04a04da92e69301888849c34e58f8d8f06f243736044d02aaaad4b11102"
+    "zhSha256": "0ce7f04a04da92e69301888849c34e58f8d8f06f243736044d02aaaad4b11102",
+    "snapshotPath": "tests/fixtures/editorial-20261002/賽後心得-「看見你的聲音-語音辨識後修正」.md",
+    "snapshotSha256": "f7b6b821e592e2be86e827769b5b121dd784280cf712f440c3613362721e69cc"
   },
   {
     "path": "source/_posts/那些路過的-me-因們.md",
-    "zhSha256": "cc0825ee937a7f0141ce334676ab4680f0421027d83b9ec7b3d4b4abd35de09e"
+    "zhSha256": "cc0825ee937a7f0141ce334676ab4680f0421027d83b9ec7b3d4b4abd35de09e",
+    "snapshotPath": "tests/fixtures/editorial-20261002/那些路過的-me-因們.md",
+    "snapshotSha256": "b20509d48944b79b208d720e6cb9a121f1e12a149560942bb87728dfa2c13778"
   },
   {
     "path": "source/_posts/～關於我的文章規劃～.md",
-    "zhSha256": "b8358c5fd6430d2236b27f0939a347f28dca9ed043c1faaf8859fb615aaa0c4d"
+    "zhSha256": "b8358c5fd6430d2236b27f0939a347f28dca9ed043c1faaf8859fb615aaa0c4d",
+    "snapshotPath": "tests/fixtures/editorial-20261002/～關於我的文章規劃～.md",
+    "snapshotSha256": "eee1a7ef5f50cc0eade2f5e0648e54e8504efb8b7bf1cff9f60760c4fec4b4e6"
   },
   {
     "path": "source/about/index.md",
-    "zhSha256": "9def5f2017998a40e54d586a91c516e0c4bb47b04260c9012187a2eb34189259"
+    "zhSha256": "9def5f2017998a40e54d586a91c516e0c4bb47b04260c9012187a2eb34189259",
+    "commonOutsideRankUpdateSha256": "60fddddb54012a9ea52198599f51eef55af91e739f1f30009fc52a8600c24615",
+    "snapshotPath": "tests/fixtures/editorial-20261002/about.md",
+    "snapshotSha256": "a46e32c9a74dfc8a1f02aabcad584e41ba1f1cea465a22f7ecab267c7dd08e86"
   },
   {
     "path": "source/links/index.md",
-    "zhSha256": "8554790772116c268ba8afca76e971dd3ac9f5c0e1e2bc5a9322e3f3373d344f"
+    "zhSha256": "8554790772116c268ba8afca76e971dd3ac9f5c0e1e2bc5a9322e3f3373d344f",
+    "snapshotPath": "tests/fixtures/editorial-20261002/links.md",
+    "snapshotSha256": "488ab204eae85634201ac7bcab334c89b8ec940dda36b015eb0eac2e8381f378"
   }
 ]
