@@ -7,6 +7,9 @@ test('post CLI keeps draft preimages and refuses replacement or path traversal',
   assert.equal(run('new','測試文章').status,0);const draft=path.join(root,'source/_drafts/測試文章.md');const original=fs.readFileSync(draft,'utf8');
   assert.equal(run('publish','測試文章').status,0);assert.equal(fs.readFileSync(path.join(root,'source/_posts/測試文章.md'),'utf8'),original);assert.equal(fs.existsSync(draft),false);
   const batches=fs.readdirSync(path.join(root,'.history/published-drafts'));assert.equal(batches.length,1);assert.equal(fs.readFileSync(path.join(root,'.history/published-drafts',batches[0],'測試文章.md'),'utf8'),original);
-  assert.equal(run('new','測試文章').status,0);assert.notEqual(run('publish','測試文章').status,0);assert.equal(fs.readFileSync(draft,'utf8'),original);assert.equal(fs.readFileSync(path.join(root,'source/_posts/測試文章.md'),'utf8'),original);
-  assert.notEqual(run('publish','../../README').status,0);assert.equal(fs.existsSync(draft),true);
+  assert.equal(run('new','測試文章').status,0);
+  // A recreated draft has its own timestamp and edits; preserve each file independently.
+  const replacement=fs.readFileSync(draft,'utf8')+'\n這是後來修改的草稿。\n';fs.writeFileSync(draft,replacement);assert.notEqual(replacement,original);
+  assert.notEqual(run('publish','測試文章').status,0);assert.equal(fs.readFileSync(draft,'utf8'),replacement);assert.equal(fs.readFileSync(path.join(root,'source/_posts/測試文章.md'),'utf8'),original);
+  assert.notEqual(run('publish','../../README').status,0);assert.equal(fs.existsSync(draft),true);assert.equal(fs.readFileSync(draft,'utf8'),replacement);assert.equal(fs.readFileSync(path.join(root,'source/_posts/測試文章.md'),'utf8'),original);
 });
